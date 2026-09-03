@@ -1,10 +1,10 @@
-# 🎖️ Passaporte Digital - LTD
+# Passaporte Digital - LTD
 
 O **Passaporte Digital do LTD (Laboratório de Tecnologia Digital)** é uma plataforma estática, leve e automatizada desenvolvida para registrar a presença de alunos em oficinas, coletar feedbacks de reação (1 a 5 estrelas) e disponibilizar uma galeria virtual de insígnias de conquistas.
 
 ---
 
-## 🛠️ Arquitetura do Projeto
+## Arquitetura do Projeto
 
 O projeto utiliza uma abordagem de **Gerador de Site Estático (SSG)** com **Python** hospedado 100% gratuitamente via **GitHub Pages** e automatizado pelo **GitHub Actions**.
 
