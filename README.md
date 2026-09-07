@@ -9,7 +9,7 @@ O **Passaporte Digital do LTD (Laboratório de Tecnologia Digital)** é uma plat
 O projeto utiliza uma abordagem de **Gerador de Site Estático (SSG)** com **Python** hospedado 100% gratuitamente via **GitHub Pages** e automatizado pelo **GitHub Actions**.
 
 ```text
-[ Resposta do Aluno ] ──► [ Formulário Tally / Google Forms ]
+[ Resposta do Aluno ] ──► [ Formulário Google Forms ]
                                      │
                                      ▼
                           [ Planilha / data/alunos.json ]
