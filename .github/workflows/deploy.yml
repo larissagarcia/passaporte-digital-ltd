@@ -59,7 +59,7 @@ jobs:
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: | Olá! Deploy concluído com sucesso.
 
-        git add .
+        git add .github/workflows/deploy.yml
         git commit -m "Ajustes: notificação"
         git push origin main
         
