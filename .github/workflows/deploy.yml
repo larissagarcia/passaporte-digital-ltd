@@ -50,3 +50,12 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+        - name: Enviar notificações de sucesso 
+        if: success()
+        uses: appleboy/telegram-action@master
+        with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TO }}
+        message: | Olá! Deploy concluído com sucesso.
+        
