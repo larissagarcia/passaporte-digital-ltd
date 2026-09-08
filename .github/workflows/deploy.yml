@@ -50,3 +50,13 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+        # --- Notificações de Sucesso via telegram
+      - name: Send Telegram Notification background
+      if: success()
+      run: |
+      MESSAGE="Passaporte Digital LTD Atualizado!%0A%0AO site foi recompilado e publicado com sucesso no GitHub Pages.%0A%0A Acesse em: ${{steps.deployment.outputs.page_url}}"
+      curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"\
+      -d "chat_id=$ {{ secrets.TELEGRAM_CHAT_ID }}"\
+      -d "text=${MESSAGE}"\
+      -d "parse_mode=Markdonw"
