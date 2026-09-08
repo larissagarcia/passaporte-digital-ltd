@@ -58,4 +58,8 @@ jobs:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TO }}
         message: | Olá! Deploy concluído com sucesso.
+
+        git add .
+        git commit -m "Ajustes: notificação"
+        git push origin main
         
