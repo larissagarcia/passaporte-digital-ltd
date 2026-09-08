@@ -51,7 +51,7 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-        # --- Notificações de Sucesso via telegram
+        # --- Notificações de Sucesso via telegram ---
       - name: Send Telegram Notification background
       if: success()
       run: |
