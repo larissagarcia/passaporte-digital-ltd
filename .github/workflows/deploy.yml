@@ -50,16 +50,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-        - name: Enviar notificações de sucesso 
-        if: always()
-        uses: appleboy/telegram-action@master
-        with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: | Olá! Deploy concluído com sucesso.
-
-        git add .github/workflows/deploy.yml
-        git commit -m "Ajustes: notificação"
-        git push origin main
-        
