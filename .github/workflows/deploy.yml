@@ -52,11 +52,11 @@ jobs:
         uses: actions/deploy-pages@v4
 
         - name: Enviar notificações de sucesso 
-        if: success()
+        if: always()
         uses: appleboy/telegram-action@master
         with:
         to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
         message: | Olá! Deploy concluído com sucesso.
 
         git add .
