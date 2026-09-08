@@ -2,9 +2,30 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Passaporte Digital LTD: acompanhamento de presença, reações e insígnias do aluno." />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer></script>
+    <script src="https://unpkg.com/lucide@latest" defer></script>
     <title>Passaporte Digital LTD</title>
+    <style>
+        /* Alvos de toque confortáveis para celular e foco visível para teclado de tela. */
+        .touch-target {
+            min-height: 48px;
+            min-width: 48px;
+        }
+
+        .status-message {
+            min-height: 24px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-slate-50">
     <header class="bg-white border-b border-slate-200">
@@ -44,6 +65,43 @@
     </header>
 
     <main class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Presença-->
+        <section
+            class="mb-8 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+            aria-labelledby="participacao-titulo"
+        >
+            <h2 id="participacao-titulo" class="text-lg sm:text-xl font-bold text-[#ff2a00]">
+                Participação na aula
+            </h2>
+            <butto class="text-sm text-[#88005b] font-semibold mt-1">
+                Responda o formulário para cofirmar sua presença
+            </butto>
+
+            <div class="mt-5 flex flex-col sm:flex-row sm:items-center gap-4">
+                <button
+                    type="button"
+                    id="btn-presenca"
+                    class="touch-target w-full sm:w-auto px-5 py-3 rounded-xl bg-[#ff2a00] text-white font-semibold hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-orange-200
+                    disabled:opacity-70 disabled:cursor-not-allowed"
+                    aria-describedby="feedback-presenca"
+                >
+                    <span class="inline-flex items-center justify-center gap-2">
+                        <i data-lucide="check-circle" class="w-5 h-5" aria-hidden="true"></i>
+                        Enviar Formulário
+                    </span>
+                </button>
+
+                <p
+                    id="feedback-presenca"
+                    class="status-message text-sm font-semibold text-slate-600"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true"
+                ></p>
+            </div>
+
+        </section>
+
         <div class="mb-6">
             <h2 class="text-xl font-bold text-[#ff2a00]">Sua Jornada</h2>
         </div>
@@ -57,8 +115,8 @@
                     <div class="w-60 h-60 flex items-center justify-center">
                         <img
                             src="../assets/badges/mdl_1_parte1_col_azul.png"
-                            alt="Insígnia do Módulo 1"
-                            class="w-80 h-80 object-contain drop-shadow-lg"
+                            alt="Insígnia do módulo"
+                            class="w-80 h-80 object-contain drop-shadow-lg" loading="lazy" decoding="async"
                         />
                     </div>
                 </section>
@@ -95,8 +153,8 @@
                     <div class="w-60 h-60 flex items-center justify-center">
                         <img
                             src="../assets/badges/mdl_1_parte_2_col_azul.png"
-                            alt="Insígnia do Módulo 1"
-                            class="w-80 h-80 object-contain drop-shadow-lg"
+                            alt="Insígnia do módulo"
+                            class="w-80 h-80 object-contain drop-shadow-lg" loading="lazy" decoding="async"
                         />
                     </div>
                 </section>
@@ -133,8 +191,8 @@
                     <div class="w-60 h-60 flex items-center justify-center">
                         <img
                             src="../assets/badges/mdl_2_parte_1_col_laranja.png"
-                            alt="Insígnia do Módulo 1"
-                            class="w-full h-full object-contain drop-shadow-lg"
+                            alt="Insígnia do módulo"
+                            class="w-full h-full object-contain drop-shadow-lg" loading="lazy" decoding="async"
                         />
                     </div>
                 </section>
@@ -170,8 +228,8 @@
                     <div class="w-60 h-60 flex items-center justify-center">
                         <img
                             src="../assets/badges/mdl_2_parte_2_col_laranja.png"
-                            alt="Insígnia do Módulo 1"
-                            class="w-full h-full object-contain drop-shadow-lg"
+                            alt="Insígnia do módulo"
+                            class="w-full h-full object-contain drop-shadow-lg" loading="lazy" decoding="async"
                         />
                     </div>
                 </section>
@@ -206,8 +264,8 @@
                     <div class="w-60 h-60 flex items-center justify-center">
                         <img
                             src="../assets/badges/mdl_3_col_vermelho.png"
-                            alt="Insígnia do Módulo 1"
-                            class="w-full h-full object-contain drop-shadow-lg"
+                            alt="Insígnia do módulo"
+                            class="w-full h-full object-contain drop-shadow-lg" loading="lazy" decoding="async"
                         />
                     </div>
                 </section>
@@ -242,8 +300,8 @@
                     <div class="w-60 h-60 flex items-center justify-center">
                         <img
                             src="../assets/badges/mdl_4_cinza.png"
-                            alt="Insígnia do Módulo 1"
-                            class="w-full h-full object-contain drop-shadow-lg"
+                            alt="Insígnia do módulo"
+                            class="w-full h-full object-contain drop-shadow-lg" loading="lazy" decoding="async"
                         />
                     </div>
                 </section>
@@ -278,8 +336,8 @@
                     <div class="w-60 h-60 flex items-center justify-center">
                         <img
                             src="../assets/badges/mdl_5_parte_1_cinza.png"
-                            alt="Insígnia do Módulo 1"
-                            class="w-full h-full object-contain drop-shadow-lg"
+                            alt="Insígnia do módulo"
+                            class="w-full h-full object-contain drop-shadow-lg" loading="lazy" decoding="async"
                         />
                     </div>
                 </section>
@@ -314,8 +372,8 @@
                     <div class="w-60 h-60 flex items-center justify-center">
                         <img
                             src="../assets/badges/mdl_5_parte_2_cinza.png"
-                            alt="Insígnia do Módulo 1"
-                            class="w-full h-full object-contain drop-shadow-lg"
+                            alt="Insígnia do módulo"
+                            class="w-full h-full object-contain drop-shadow-lg" loading="lazy" decoding="async"
                         />
                     </div>
                 </section>
@@ -350,8 +408,8 @@
                     <div class="w-60 h-60 flex items-center justify-center">
                         <img
                             src="../assets/badges/mdl_6_cinza.png"
-                            alt="Insígnia do Módulo 1"
-                            class="w-80 h-80 object-contain drop-shadow-lg"
+                            alt="Insígnia do módulo"
+                            class="w-80 h-80 object-contain drop-shadow-lg" loading="lazy" decoding="async"
                         />
                     </div>
                 </section>
@@ -386,8 +444,8 @@
                     <div class="w-60 h-60 flex items-center justify-center">
                         <img
                             src="../assets/badges/mdl_7_cinza.png"
-                            alt="Insígnia do Módulo 1"
-                            class="w-80 h-80 object-contain drop-shadow-lg"
+                            alt="Insígnia do módulo"
+                            class="w-80 h-80 object-contain drop-shadow-lg" loading="lazy" decoding="async"
                         />
                     </div>
                 </section>
@@ -419,7 +477,55 @@
     </main>
 
     <script>
-        lucide.createIcons();
+        document.addEventListener("DOMContentLoaded", () => {
+            // Inicializa os ícones somente quando a biblioteca já estiver disponível.
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+
+            const btnPresenca = document.getElementById("btn-presenca");
+            const feedbackPresenca = document.getElementById("feedback-presenca");
+            const feedbackReacao = document.getElementById("feedback-reacao");
+            const reactionButtons = document.querySelectorAll(".reaction-btn");
+
+            btnPresenca.addEventListener("click", () => {
+                btnPresenca.disabled = true;
+                btnPresenca.setAttribute("aria-pressed", "true");
+                btnPresenca.innerHTML = `
+                    <span class="inline-flex items-center justify-center gap-2">
+                        <i data-lucide="check-circle" class="w-5 h-5" aria-hidden="true"></i>
+                        Presença registrada
+                    </span>
+                `;
+
+                feedbackPresenca.textContent =
+                    "Presença confirmada! Sua insígnia aparecerá em breve.";
+                feedbackPresenca.className =
+                    "status-message text-sm font-semibold text-green-600";
+
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            });
+
+            reactionButtons.forEach((button) => {
+                button.addEventListener("click", () => {
+                    reactionButtons.forEach((item) => {
+                        item.setAttribute("aria-pressed", "false");
+                        item.classList.remove("ring-2", "ring-offset-2", "ring-slate-400");
+                    });
+
+                    button.setAttribute("aria-pressed", "true");
+                    button.classList.add("ring-2", "ring-offset-2", "ring-slate-400");
+
+                    const reaction = button.dataset.reaction;
+                    feedbackReacao.textContent =
+                        `Reação registrada com sucesso: ${reaction}.`;
+                    feedbackReacao.className =
+                        "status-message mt-3 text-sm font-semibold text-green-600";
+                });
+            });
+        });
     </script>
   </body>
 </html>
