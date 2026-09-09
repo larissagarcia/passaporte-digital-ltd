@@ -86,7 +86,7 @@
                     aria-describedby="feedback-presenca"
                 >
                     <span class="inline-flex items-center justify-center gap-2">
-                        <i data-lucide="check-circle" class="w-5 h-5" aria-hidden="true"></i>
+                        <i data-lucide="check-circle" class="w-4 h-4" aria-hidden="true"></i>
                         Enviar Formulário
                     </span>
                 </button>
@@ -99,7 +99,68 @@
                     aria-atomic="true"
                 ></p>
             </div>
+        </section>
 
+         <!-- Avaliação -->
+        <section  class="mb-8 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6" aria-labelledby="participacao-titulo">
+                   <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5" data-workshop-id="oficina-atual">
+                    <h3 class="text-base font-bold text-slate-800">2. Sua reação</h3>
+                    <p class="mt-1 text-sm text-slate-600">Como você avalia esta oficina?</p>
+
+                    <fieldset class="mt-4">
+                        <legend class="sr-only">Escolha de 1 a 5 estrelas</legend>
+                        <div
+                            id="reacao"
+                            class="grid w-full grid-cols-5 items-center gap-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1 sm:p-2"
+                            role="radiogroup"
+                            aria-label="Avaliação da oficina de 1 a 5 estrelas"
+                        >
+                            <button
+                                type="button"
+                                class="reaction-btn flex h-12 w-full min-h-12 min-w-0 items-center justify-center rounded-xl bg-transparent p-0 text-3xl leading-none text-slate-300 transition-colors hover:bg-orange-50 hover:text-yellow-400 active:bg-orange-100 focus:outline-none focus:ring-0 focus:ring-offset-0 sm:h-14 sm:min-h-14 sm:text-4xl"
+                                data-rating="1"
+                                role="radio"
+                                aria-label="1 estrela"
+                                aria-checked="false"
+                            >★</button>
+                            <button
+                                type="button"
+                                class="reaction-btn flex h-12 w-full min-h-12 min-w-0 items-center justify-center rounded-xl bg-transparent p-0 text-3xl leading-none text-slate-300 transition-colors hover:bg-orange-50 hover:text-yellow-400 active:bg-orange-100 focus:outline-none focus:ring-0 focus:ring-offset-0 sm:h-14 sm:min-h-14 sm:text-4xl"
+                                data-rating="2"
+                                role="radio"
+                                aria-label="2 estrelas"
+                                aria-checked="false"
+                            >★</button>
+                            <button
+                                type="button"
+                                class="reaction-btn flex h-12 w-full min-h-12 min-w-0 items-center justify-center rounded-xl bg-transparent p-0 text-3xl leading-none text-slate-300 transition-colors hover:bg-orange-50 hover:text-yellow-400 active:bg-orange-100 focus:outline-none focus:ring-0 focus:ring-offset-0 sm:h-14 sm:min-h-14 sm:text-4xl"
+                                data-rating="3"
+                                role="radio"
+                                aria-label="3 estrelas"
+                                aria-checked="false"
+                            >★</button>
+                            <button
+                                type="button"
+                                class="reaction-btn flex h-12 w-full min-h-12 min-w-0 items-center justify-center rounded-xl bg-transparent p-0 text-3xl leading-none text-slate-300 transition-colors hover:bg-orange-50 hover:text-yellow-400 active:bg-orange-100 focus:outline-none focus:ring-0 focus:ring-offset-0 sm:h-14 sm:min-h-14 sm:text-4xl"
+                                data-rating="4"
+                                role="radio"
+                                aria-label="4 estrelas"
+                                aria-checked="false"
+                            >★</button>
+                            <button
+                                type="button"
+                                class="reaction-btn flex h-12 w-full min-h-12 min-w-0 items-center justify-center rounded-xl bg-transparent p-0 text-3xl leading-none text-slate-300 transition-colors hover:bg-orange-50 hover:text-yellow-400 active:bg-orange-100 focus:outline-none focus:ring-0 focus:ring-offset-0 sm:h-14 sm:min-h-14 sm:text-4xl"
+                                data-rating="5"
+                                role="radio"
+                                aria-label="5 estrelas"
+                                aria-checked="false"
+                            >★</button>
+                        </div>
+                        <p id="rating-value" class="mt-2 text-center text-sm font-semibold text-slate-600" aria-live="polite">Nenhuma reação selecionada</p>
+                        <p id="feedback-reacao" class="status-message mt-2 text-center text-sm font-semibold text-slate-600" role="status" aria-live="polite" aria-atomic="true"></p>
+                    </fieldset>
+                </div>
+            </div>
         </section>
 
         <div class="mb-6">
@@ -510,19 +571,30 @@
 
             reactionButtons.forEach((button) => {
                 button.addEventListener("click", () => {
+                    const rating = Number(button.dataset.rating);
+
                     reactionButtons.forEach((item) => {
-                        item.setAttribute("aria-pressed", "false");
-                        item.classList.remove("ring-2", "ring-offset-2", "ring-slate-400");
+                        const itemRating = Number(item.dataset.rating);
+                        const selected = itemRating <= rating;
+
+                        item.classList.toggle("text-yellow-400", selected);
+                        item.classList.toggle("text-slate-300", !selected);
+                        item.setAttribute(
+                            "aria-checked",
+                            itemRating === rating ? "true" : "false"
+                        );
                     });
 
-                    button.setAttribute("aria-pressed", "true");
-                    button.classList.add("ring-2", "ring-offset-2", "ring-slate-400");
+                    const ratingValue = document.getElementById("rating-value");
 
-                    const reaction = button.dataset.reaction;
+                    ratingValue.textContent =
+                        rating === 1 ? "1 estrela" : `${rating} estrelas`;
+
                     feedbackReacao.textContent =
-                        `Reação registrada com sucesso: ${reaction}.`;
+                        `Reação registrada com sucesso: ${rating} ${rating === 1 ? "estrela" : "estrelas"}.`;
+
                     feedbackReacao.className =
-                        "status-message mt-3 text-sm font-semibold text-green-600";
+                        "status-message mt-2 text-center text-sm font-semibold text-green-600";
                 });
             });
         });
