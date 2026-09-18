@@ -1,7 +1,62 @@
 [
   {
-    "nome": "Exemplo de Aluno",
-    "email": "aluno@exemplo.com",
+    "nome": "Matheus Mar",
+    "email": "matheusmarmartins@gmail.com",
+    "insignias": ["Modulo1_InclusaoDigital", "Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2", "Modulo3_SegurancaDigital"]
+  },
+  {
+    "nome": "Adriano Ramos",
+    "email": "adrianomagnoamr10@gmail.com",
+    "insignias": ["Modulo1_InclusaoDigital"]
+  },
+  {
+    "nome": "Alice Rodrigues",
+    "email": "alicecostarodrigues10@gmail.com",
+    "insignias": ["Modulo1_InclusaoDigital"]
+  },
+  {
+    "nome": "Antonela Silva",
+    "email": "antonelasarmento04@gmail.com",
+    "insignias": ["Modulo1_InclusaoDigital"]
+  },
+  {
+    "nome": "Davi Cardoso",
+    "email": "davicardosomachado96@gmail.com",
+    "insignias": ["Modulo1_InclusaoDigital"]
+  },
+  {
+    "nome": "Fernanda Furtado",
+    "email": "fernandacardosofurtadofernanda@gmail.com",
+    "insignias": ["Modulo1_InclusaoDigital"]
+  },
+  {
+    "nome": "Kemilly Dias",
+    "email": "kemillydias995@gmail.com",
+    "insignias": ["Modulo1_InclusaoDigital"]
+  },
+  {
+    "nome": "Maria Eduarda",
+    "email": "mariaeduardagoncalvesbaiag@gmail.com",
+    "insignias": ["Modulo1_InclusaoDigital"]
+  },
+  {
+    "nome": "Maria Livia",
+    "email": "silvazmariax333@gmail.com",
+    "insignias": ["Modulo1_InclusaoDigital"]
+  },
+  {
+    "nome": "Pedro Barbosa",
+    "email": "soutopedro24@gmail.com",
+    "insignias": ["Modulo1_InclusaoDigital"]
+  },
+  {
+    "nome": "Raiane Ferreira",
+    "email": "trindadeferreirarayane@gmail.com",
+    "insignias": ["Modulo1_InclusaoDigital"]
+  },
+  {
+    "nome": "Renato Farias",
+    "email": "renatofarias959@gmail.com",
     "insignias": ["Modulo1_InclusaoDigital"]
   }
 ]

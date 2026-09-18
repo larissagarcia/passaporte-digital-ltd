@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style type="text/tailwindcss">
+        @custom-variant dark (&:where(.dark, .dark *));
+    </style>
+
+    <title>Passaporte Digital LTD</title>
+</head>
+<body class="min-h-screen bg-[#F8FAFC] text-[#1E293B] transition-colors duration-300 dark:bg-[#111214] dark:text-white lg:flex">
+
+    <!--Overlay do drawere somente para telas pequenas-->
+    <div 
+        id="drawerOverlay"
+        class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm opacity-0 invisible transition-all duration-300 lg:hidden">
+    </div>
+
+    <!--Sidebar-->
+    <aside 
+        id="drawer" 
+        class="fixed inset-y-0 left-0 z-50 flex w-[280px] max-w-[85vw] flex-col -translate-x-full border-r border-slate-200/80 bg-white shadow-2xl transition-transform duration-300 ease-out dark:border-white/10 dark:bg-[#17181C] lg:sticky lg:top-0 lg:h-screen lg:w-72 lg:shrink-0 lg:translate-x-0 lg:shadow-none"
+    >
+
+        <!--Btn de fechar sidebar-->
+        <div class="flex h-[50px] items-center justify-end px-4 lg:hidden">
+
+            <button 
+                id="closeDrawer"
+                type="button" 
+                aria-label="Fechar menu"
+                class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition 
+                hover:bg-slate-100 
+                hover:text-slate-900
+                dark:text-gray-400
+                dark:hover:bg-white/10
+                dark:hover:text-white">
+                    <i
+                        data-lucide="arrow-left-from-line"
+                        class="h-5 w-5"
+                    >
+                    </i>
+            </button>
+        </div>
+
+        <!--Perfil do usuário-->
+        <div class="mx-4 mt-4 lg:mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-[#202126]">
+
+            <div class="flex items-center gap-3">
+                <div class="relative shrink-0">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500">
+                        <i
+                            data-lucide="user"
+                            class="h-6 w-6 text-white"
+                        >   
+                        </i>
+                    </div>
+
+                    <span class="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-slate-50 bg-green-400 dark:border-[#202126]"
+                    >
+                    </span>
+                </div>
+
+                <div class="min-w-0">
+                    <p id="studentNameSidebar" class="truncate text-sm font-bold">
+                        Matheus Mar
+                    </p>
+                    <p id="studentEmailSidebar" class="truncate text-xs text-slate-400 dark:text-gray-400">
+                        matheusmarmartins@gmail.com
+                    </p>
+                    <p class="mt-1 text-[10px] font-bold text-green-500">
+                        ONLINE
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!--Navegacao-->
+        <nav class="mt-6 flex-1 px-3">
+            <button 
+                data-section="gallery"
+                class="nav-item flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-[#ff2a00] font-bold transition hover:bg-orange-500/10 hover:text-[#ff2a00] dark:text-[#ff2a00] dark:hover:bg-orange-500/10 dark:hover:text-[#ff2a00]
+                "
+            >
+                <i
+                    data-lucide="award"
+                    class="h-5 w-5 "
+                >
+                </i>
+                <span>Galeria de Insígnia</span>
+            </button>
+
+            <button 
+                data-section="presence"
+                class="nav-item flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-[#ff2a00] font-bold transition hover:bg-orange-500/10 hover:text-[#ff2a00] dark:text-[#ff2a00] dark:hover:bg-orange-500/10 dark:hover:text-[#ff2a00]
+                "
+            >
+                <i
+                    data-lucide="calendar-check"
+                    class="h-5 w-5"
+                >
+                </i>
+                <span>Confirma Presença e Reação</span>
+            </button>
+
+            <button 
+                data-section="contact"
+                class="nav-item flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-[#ff2a00] font-bold transition hover:bg-orange-500/10 hover:text-[#ff2a00] dark:text-[#ff2a00] dark:hover:bg-orange-500/10 dark:hover:text-[#ff2a00]
+                "
+            >
+                <i
+                    data-lucide="message-circle"
+                    class="h-5 w-5"
+                >
+                </i>
+                <span>Contato</span>
+            </button>
+
+            <button 
+                data-section="about"
+                class="nav-item flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-[#ff2a00] font-bold transition hover:bg-orange-500/10 hover:text-[#ff2a00] dark:text-[#ff2a00] dark:hover:bg-orange-500/10 dark:hover:text-[#ff2a00]
+                "
+            >
+                <i
+                    data-lucide="info"
+                    class="h-5 w-5"
+                >
+                </i>
+                <span>Sobre</span>
+            </button>
+        </nav>
+    </aside>
+
+    <!--Conteúdo principal-->
+    <div class="min-h-screen flex-1 min-w-0">
+
+        <header class="sticky top-0 z-30 border-b border-slate-200 bg-[#F8FAFC]/95 backdrop-blur-md dark:border-white/10 dark:bg-[#111214]/95">
+
+            <div class="mx-auto flex h-[70px] max-w-6xl items-center justify-between px-4 sm:px-8">
+                <button
+                    id="openDrawer"
+                    type="button"
+                    aria-label="Abrir menu"
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition hover:bg-slate-200 dark:hover:bg-white/10 lg:hidden"
+                >
+                    <i
+                        data-lucide="menu"
+                        class="h-6 w-6 text-[#ff2a00]"
+                    >
+                    </i>
+                </button>
+
+                <div class="flex min-w-0 items-center justify-center gap-2">
+                    <h1 class="text-[#ff2a00] truncate text-[23px] font-bold tracking-wide sm:text-xl">
+                        PASSAPORTE DIGITAL LTD
+                    </h1>
+                </div>
+
+                <button
+                    id="themeToggle"
+                    type="button"
+                    aria-label="Alternar tem"
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-200 transition hover:bg-slate-300 dark:bg-white/5 dark:hover:bg-white/10"
+                >
+                    <i
+                        id="sunIcon"
+                        data-lucide="sun"
+                        class="h-5 w-5 text-orange-500 dark:hidden"
+                    >
+                    </i>
+                    <i
+                        id="moonIcon"
+                        data-lucide="moon"
+                        class="hidden h-5 w-5 text-blue-300 dark:block"
+                    >
+                    </i>
+                </button>
+            </div>
+        </header>
+
+        <main class="mx-auto max-w-6xl px-4 pb-12 pt-8 sm:px-8">
+
+            <!--Perfil + progesso-->
+            <section class="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm transition-colors dark:border-white/10 dark:bg-[#191A1E] sm:p-8">
+
+                <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-center gap-5">
+                        <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-orange-500 sm:h-20 sm:w-20">
+                            <i
+                                data-lucide="user"
+                                class="h-8 w-8 text-white sm:h-10 sm:w-10"
+                            >
+                            </i>
+                        </div>
+
+                        <div>
+                            <h2 id="studentName" class="text-2xl font-bold leading-tight sm:text-3xl">
+                                Olá, Matheus Mar
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div class="w-full sm:max-w-md">
+
+                        <div class="flex items-center justify-between text-sm font-semibold">
+                            <span id="progressText" class="flex items-center gap-2 text-[#ff2a00]">
+                                Progresso: 3 de 10 oficinas
+                            </span>
+                            <strong id="progressPercent" class="text-[#ff2a00]">
+                                30%
+                            </strong>
+                        </div>
+
+                        <div class="mt-2 h-4 w-full overflow-hidden rounded-full border border-slate-200 bg-slate-100 dark:border-white/10 dark:bg-[#151619]">
+                            <div
+                                id="progressBar"
+                                class="h-full rounded-full bg-orange-500 transition-all duration-500"
+                                style="width: 30%"
+                            >
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!--Insígnias-->
+            <section id="gallery" class="mt-10 scroll-mt-24">
+                <div class="mb-4 flex items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-2xl font-bold text-[#ff2a00]">
+                            SUAS INSÍGNIAS
+                        </h2>
+                    </div>
+                    <span
+                        id="moduleCounter"
+                        class="shrink-0 rounded-xl bg-slate-200/60 px-4 py-2 text-sm font-bold text-[#ff2a00] dark:bg-white/5 "
+                    >
+                        3/10
+                    </span>
+                </div>
+
+                <div 
+                    id="moduleCarousel"
+                    class="flex gap-5 overflow-x-auto pt-2 pb-4 snap-x snap-mandatory scroll-smooth 
+                    [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
+                    lg:grid lg:grid-cols-4 xl:grid-cols-5 lg:overflow-visible"
+                >
+                </div>
+
+                <div 
+                    id="moduleDots" 
+                    class="mt-4 flex justify-center gap-1.5 lg:hidden"
+                    aria-label="Indicadores dos módulos"
+                >
+                </div>
+            </section>
+
+            <!--layout em duas colunas-->
+            <div class="mt-10 grid gap-8 lg:grid-cols-12">
+
+                <!--Presenca-->
+                <section 
+                    id="presence" 
+                    class="scroll-mt-24 rounded-3xl border bg-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#191A1E] sm:p-8 lg:col-span-7"
+                >
+                    <h2 class="flex items-center gap-3 text-lg font-bold text-[#ff2a00] text-xl">
+                        <i
+                            data-lucide="check-circle-2"
+                            class="h-6 w-6"
+                        >
+                        </i>
+                        CONFIRMAR PRESENÇA DA OFICINA
+                    </h2>
+
+                    <div class="mt-6 space-y-3 rounded-2xl bg-slate-50 p-4 dark:bg-[#202126]">
+                        <div class="flex items-center gap-3 text-sm font-medium text-slate-700 dark:text-gray-200">
+                            <i
+                                data-lucide="calendar-days"
+                                class="h-5 w-5 text-orange-500"
+                            >
+                            </i>
+                            <span id="currentWorkshop">
+                                Oficina de Hoje: Módulo 1
+                            </span>
+                        </div>
+
+                        <div class="flex items-center gap-3 text-sm text-slate-500 dark:text-gray-400">
+                            <i
+                                data-lucide="calendar"
+                                class="h-5 w-5"
+                            >
+                            </i>
+                            <span id="dateWorkshop">
+                                Data: 3/09/2026
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="relative mt-6">
+                        <input 
+                            id="keyword"
+                            type="text" 
+                            placeholder="Digite a Palavra-chave do Dia"
+                            class="h-14 w-full rounded-2xl border bg-slate-300 bg-transparent px-5 pr-12 text-sm outline-none
+                            placeholder:text-slate-400 transition
+                            focus:border-orange-500 
+                            focus:ring-2
+                            focus:ring-orange-500/20 
+                            dark:border-white/20
+                            dark:placeholder:text-gray-500
+                            "
+                        >
+                        <i
+                            data-lucide="lock"
+                            class="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                        >
+                        </i>
+                    </div>
+
+                    <div class="mt-6">
+                        <p class="text-sm font-medium">
+                            Como você avalia a oficina de hoje?</p>
+                        <div id="stars" class="mt-3 flex gap-2"></div>
+                    </div>
+
+                    <button 
+                        id="rescueButton" 
+                        type="button" 
+                        disabled 
+                        class="mt-6 flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-orange-600 to-red-400 px-4 text-sm font-bold text-white shadow-lg shadow-orange-500/20 transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                    <i 
+                        data-lucide="circle-check" 
+                        class="h-5 w-5"
+                    >
+                    </i>
+                        RESGATAR MINHA INSÍGNIA
+                    </button>
+                </section>
+
+                <!--Contato e sobre-->
+                <div class="space-y-8 lg:col-span-5">
+                    <section 
+                        id="contact" 
+                        class="scroll-mt-24 rounded-3xl border border-slate-200/80 bg-white p-6 dark:border-white/10 dark:bg-[#191A1E] sm:p-8"
+                    >
+                        <div class="flex items-start gap-4">
+                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-green-500">
+                                <i 
+                                    data-lucide="message-circle" 
+                                    class="h-6 w-6"
+                                >
+                                </i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-[#ff2a00]">
+                                    CONTATO
+                                </h2>
+                                <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-gray-400">
+                                    Precisa de ajuda com uma oficina, presença ou insígnia? Entre em contato com os monitores do LTD.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section 
+                        id="about" 
+                        class="scroll-mt-24 rounded-3xl border border-slate-200/80 bg-white p-6 dark:border-white/10 dark:bg-[#191A1E] sm:p-8"
+                    >
+                        <div class="flex items-start gap-4">
+                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
+                                <i 
+                                    data-lucide="info" 
+                                    class="h-6 w-6"
+                                >
+                                </i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-[#ff2a00]">
+                                    SOBRE O LTD
+                                </h2>
+                                <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-gray-400">
+                                    O Laboratório de Tecnologia e Desenvolvimento promove oficinas práticas para ampliar as competências digitais dos estudantes.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <footer class="mt-12 border rounded-2xl border-orange-200 py-3">
+                <div class="flex items-center justify-center gap-3 text-sm font-bold text-orange-500">
+                    <span>LTD - Laboratório de Tecnologia Digital</span>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <div
+        id="accessModal"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/75 px-5 backdrop-blur-sm"
+    >
+        <form id="accessForm" class="w-full max-w-md rounded-3xl border border-slate-200/80 bg-white p-8 shadow-2xl dark:border-white/10 dark:bg-[#191A1E]">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400">
+                <i data-lucide="mail" class="h-8 w-8"></i>
+            </div>
+            <h2 class="mt-5 text-center text-2xl font-bold">Acesse seu passaporte</h2>
+            <p class="mt-3 text-center text-sm leading-relaxed text-slate-500 dark:text-gray-400">
+                Informe o e-mail cadastrado para visualizar suas insígnias.
+            </p>
+            <label for="accessEmail" class="mt-6 block text-sm font-semibold">E-mail</label>
+            <input id="accessEmail" type="email" autocomplete="email" required placeholder="seu@email.com" class="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-transparent px-4 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 dark:border-white/20">
+            <p id="accessError" class="mt-3 hidden text-sm font-semibold text-red-500">E-mail não encontrado. Confira o endereço e tente novamente.</p>
+            <button type="submit" class="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-orange-600 px-4 font-bold text-white transition hover:bg-orange-500">
+                <i data-lucide="log-in" class="h-5 w-5"></i>
+                ENTRAR
+            </button>
+        </form>
+    </div>
+
+    <div 
+        id="successModal" 
+        class="fixed inset-0 z-[70] hidden items-center justify-center bg-black/70 px-5 backdrop-blur-sm"
+    >
+        <div class="w-full max-w-[400px] rounded-3xl border border-slate-200/80 bg-white p-8 text-center shadow-2xl dark:border-white/10 dark:bg-[#191A1E]">
+            <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 dark:bg-green-500/10">
+                <i 
+                    data-lucide="check-circle" 
+                    class="h-12 w-12 text-green-500"
+                >
+            </i>
+            </div>
+            <h2 class="mt-5 text-2xl font-bold">Presença confirmada!</h2>
+            <p class="mt-3 text-sm leading-relaxed text-slate-500 dark:text-gray-400">
+                Sua participação foi registrada. Sua insígnia aparecerá em breve no seu Passaporte Digital.
+            </p>
+            <button 
+                id="closeSuccess" 
+                type="button" 
+                class="mt-6 h-12 w-full rounded-2xl bg-orange-600 font-bold text-white transition hover:bg-orange-500"
+            >
+                CONTINUAR
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        window.passaporteData = {"alunos": [{"email": "matheusmarmartins@gmail.com", "insignias": ["Modulo1_InclusaoDigital", "Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2", "Modulo3_SegurancaDigital"], "insignias_status": [{"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "numero": 1}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "numero": 2}, {"conquistada": true, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 3}, {"conquistada": true, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 4}, {"conquistada": true, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_3_col.png", "imagem_pendente": "src/assets/badges/mdl_3_cinza.png", "modulos": ["Modulo3_SegurancaDigital"], "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "numero": 5}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_4_col.png", "imagem_pendente": "src/assets/badges/mdl_4_cinza.png", "modulos": ["Modulo4_InteligenciaArtificial"], "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "numero": 6}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "numero": 7}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "numero": 8}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_6_col.png", "imagem_pendente": "src/assets/badges/mdl_6_cinza.png", "modulos": ["Modulo6_AcessibilidadeDigital"], "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "numero": 9}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_7_col.png", "imagem_pendente": "src/assets/badges/mdl_7_cinza.png", "modulos": ["Modulo7_TecnologiaESG"], "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "numero": 10}], "modulos": [{"id": 1, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 2, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 3, "imagem": "src/assets/badges/mdl_2_col.png", "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "conquistada"}, {"id": 4, "imagem": "src/assets/badges/mdl_2_col.png", "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "conquistada"}, {"id": 5, "imagem": "src/assets/badges/mdl_3_col.png", "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "status": "conquistada"}, {"id": 6, "imagem": "src/assets/badges/mdl_4_cinza.png", "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "status": "bloqueado"}, {"id": 7, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 8, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 9, "imagem": "src/assets/badges/mdl_6_cinza.png", "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "status": "bloqueado"}, {"id": 10, "imagem": "src/assets/badges/mdl_7_cinza.png", "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "status": "bloqueado"}], "nome": "Matheus Mar", "progresso_insignias": {"conquistadas": 3, "percentual": 30, "total": 10}}, {"email": "adrianomagnoamr10@gmail.com", "insignias": ["Modulo1_InclusaoDigital"], "insignias_status": [{"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "numero": 1}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "numero": 2}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 3}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 4}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_3_col.png", "imagem_pendente": "src/assets/badges/mdl_3_cinza.png", "modulos": ["Modulo3_SegurancaDigital"], "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "numero": 5}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_4_col.png", "imagem_pendente": "src/assets/badges/mdl_4_cinza.png", "modulos": ["Modulo4_InteligenciaArtificial"], "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "numero": 6}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "numero": 7}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "numero": 8}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_6_col.png", "imagem_pendente": "src/assets/badges/mdl_6_cinza.png", "modulos": ["Modulo6_AcessibilidadeDigital"], "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "numero": 9}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_7_col.png", "imagem_pendente": "src/assets/badges/mdl_7_cinza.png", "modulos": ["Modulo7_TecnologiaESG"], "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "numero": 10}], "modulos": [{"id": 1, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 2, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 3, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 4, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 5, "imagem": "src/assets/badges/mdl_3_cinza.png", "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "status": "bloqueado"}, {"id": 6, "imagem": "src/assets/badges/mdl_4_cinza.png", "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "status": "bloqueado"}, {"id": 7, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 8, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 9, "imagem": "src/assets/badges/mdl_6_cinza.png", "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "status": "bloqueado"}, {"id": 10, "imagem": "src/assets/badges/mdl_7_cinza.png", "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "status": "bloqueado"}], "nome": "Adriano Ramos", "progresso_insignias": {"conquistadas": 0, "percentual": 0, "total": 10}}, {"email": "alicecostarodrigues10@gmail.com", "insignias": ["Modulo1_InclusaoDigital"], "insignias_status": [{"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "numero": 1}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "numero": 2}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 3}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 4}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_3_col.png", "imagem_pendente": "src/assets/badges/mdl_3_cinza.png", "modulos": ["Modulo3_SegurancaDigital"], "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "numero": 5}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_4_col.png", "imagem_pendente": "src/assets/badges/mdl_4_cinza.png", "modulos": ["Modulo4_InteligenciaArtificial"], "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "numero": 6}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "numero": 7}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "numero": 8}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_6_col.png", "imagem_pendente": "src/assets/badges/mdl_6_cinza.png", "modulos": ["Modulo6_AcessibilidadeDigital"], "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "numero": 9}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_7_col.png", "imagem_pendente": "src/assets/badges/mdl_7_cinza.png", "modulos": ["Modulo7_TecnologiaESG"], "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "numero": 10}], "modulos": [{"id": 1, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 2, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 3, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 4, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 5, "imagem": "src/assets/badges/mdl_3_cinza.png", "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "status": "bloqueado"}, {"id": 6, "imagem": "src/assets/badges/mdl_4_cinza.png", "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "status": "bloqueado"}, {"id": 7, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 8, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 9, "imagem": "src/assets/badges/mdl_6_cinza.png", "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "status": "bloqueado"}, {"id": 10, "imagem": "src/assets/badges/mdl_7_cinza.png", "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "status": "bloqueado"}], "nome": "Alice Rodrigues", "progresso_insignias": {"conquistadas": 0, "percentual": 0, "total": 10}}, {"email": "antonelasarmento04@gmail.com", "insignias": ["Modulo1_InclusaoDigital"], "insignias_status": [{"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "numero": 1}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "numero": 2}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 3}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 4}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_3_col.png", "imagem_pendente": "src/assets/badges/mdl_3_cinza.png", "modulos": ["Modulo3_SegurancaDigital"], "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "numero": 5}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_4_col.png", "imagem_pendente": "src/assets/badges/mdl_4_cinza.png", "modulos": ["Modulo4_InteligenciaArtificial"], "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "numero": 6}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "numero": 7}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "numero": 8}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_6_col.png", "imagem_pendente": "src/assets/badges/mdl_6_cinza.png", "modulos": ["Modulo6_AcessibilidadeDigital"], "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "numero": 9}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_7_col.png", "imagem_pendente": "src/assets/badges/mdl_7_cinza.png", "modulos": ["Modulo7_TecnologiaESG"], "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "numero": 10}], "modulos": [{"id": 1, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 2, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 3, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 4, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 5, "imagem": "src/assets/badges/mdl_3_cinza.png", "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "status": "bloqueado"}, {"id": 6, "imagem": "src/assets/badges/mdl_4_cinza.png", "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "status": "bloqueado"}, {"id": 7, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 8, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 9, "imagem": "src/assets/badges/mdl_6_cinza.png", "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "status": "bloqueado"}, {"id": 10, "imagem": "src/assets/badges/mdl_7_cinza.png", "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "status": "bloqueado"}], "nome": "Antonela Silva", "progresso_insignias": {"conquistadas": 0, "percentual": 0, "total": 10}}, {"email": "davicardosomachado96@gmail.com", "insignias": ["Modulo1_InclusaoDigital"], "insignias_status": [{"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "numero": 1}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "numero": 2}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 3}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 4}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_3_col.png", "imagem_pendente": "src/assets/badges/mdl_3_cinza.png", "modulos": ["Modulo3_SegurancaDigital"], "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "numero": 5}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_4_col.png", "imagem_pendente": "src/assets/badges/mdl_4_cinza.png", "modulos": ["Modulo4_InteligenciaArtificial"], "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "numero": 6}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "numero": 7}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "numero": 8}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_6_col.png", "imagem_pendente": "src/assets/badges/mdl_6_cinza.png", "modulos": ["Modulo6_AcessibilidadeDigital"], "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "numero": 9}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_7_col.png", "imagem_pendente": "src/assets/badges/mdl_7_cinza.png", "modulos": ["Modulo7_TecnologiaESG"], "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "numero": 10}], "modulos": [{"id": 1, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 2, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 3, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 4, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 5, "imagem": "src/assets/badges/mdl_3_cinza.png", "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "status": "bloqueado"}, {"id": 6, "imagem": "src/assets/badges/mdl_4_cinza.png", "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "status": "bloqueado"}, {"id": 7, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 8, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 9, "imagem": "src/assets/badges/mdl_6_cinza.png", "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "status": "bloqueado"}, {"id": 10, "imagem": "src/assets/badges/mdl_7_cinza.png", "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "status": "bloqueado"}], "nome": "Davi Cardoso", "progresso_insignias": {"conquistadas": 0, "percentual": 0, "total": 10}}, {"email": "fernandacardosofurtadofernanda@gmail.com", "insignias": ["Modulo1_InclusaoDigital"], "insignias_status": [{"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "numero": 1}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "numero": 2}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 3}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 4}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_3_col.png", "imagem_pendente": "src/assets/badges/mdl_3_cinza.png", "modulos": ["Modulo3_SegurancaDigital"], "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "numero": 5}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_4_col.png", "imagem_pendente": "src/assets/badges/mdl_4_cinza.png", "modulos": ["Modulo4_InteligenciaArtificial"], "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "numero": 6}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "numero": 7}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "numero": 8}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_6_col.png", "imagem_pendente": "src/assets/badges/mdl_6_cinza.png", "modulos": ["Modulo6_AcessibilidadeDigital"], "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "numero": 9}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_7_col.png", "imagem_pendente": "src/assets/badges/mdl_7_cinza.png", "modulos": ["Modulo7_TecnologiaESG"], "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "numero": 10}], "modulos": [{"id": 1, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 2, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 3, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 4, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 5, "imagem": "src/assets/badges/mdl_3_cinza.png", "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "status": "bloqueado"}, {"id": 6, "imagem": "src/assets/badges/mdl_4_cinza.png", "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "status": "bloqueado"}, {"id": 7, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 8, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 9, "imagem": "src/assets/badges/mdl_6_cinza.png", "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "status": "bloqueado"}, {"id": 10, "imagem": "src/assets/badges/mdl_7_cinza.png", "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "status": "bloqueado"}], "nome": "Fernanda Furtado", "progresso_insignias": {"conquistadas": 0, "percentual": 0, "total": 10}}, {"email": "kemillydias995@gmail.com", "insignias": ["Modulo1_InclusaoDigital"], "insignias_status": [{"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "numero": 1}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "numero": 2}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 3}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 4}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_3_col.png", "imagem_pendente": "src/assets/badges/mdl_3_cinza.png", "modulos": ["Modulo3_SegurancaDigital"], "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "numero": 5}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_4_col.png", "imagem_pendente": "src/assets/badges/mdl_4_cinza.png", "modulos": ["Modulo4_InteligenciaArtificial"], "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "numero": 6}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "numero": 7}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "numero": 8}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_6_col.png", "imagem_pendente": "src/assets/badges/mdl_6_cinza.png", "modulos": ["Modulo6_AcessibilidadeDigital"], "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "numero": 9}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_7_col.png", "imagem_pendente": "src/assets/badges/mdl_7_cinza.png", "modulos": ["Modulo7_TecnologiaESG"], "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "numero": 10}], "modulos": [{"id": 1, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 2, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 3, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 4, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 5, "imagem": "src/assets/badges/mdl_3_cinza.png", "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "status": "bloqueado"}, {"id": 6, "imagem": "src/assets/badges/mdl_4_cinza.png", "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "status": "bloqueado"}, {"id": 7, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 8, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 9, "imagem": "src/assets/badges/mdl_6_cinza.png", "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "status": "bloqueado"}, {"id": 10, "imagem": "src/assets/badges/mdl_7_cinza.png", "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "status": "bloqueado"}], "nome": "Kemilly Dias", "progresso_insignias": {"conquistadas": 0, "percentual": 0, "total": 10}}, {"email": "mariaeduardagoncalvesbaiag@gmail.com", "insignias": ["Modulo1_InclusaoDigital"], "insignias_status": [{"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "numero": 1}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "numero": 2}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 3}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 4}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_3_col.png", "imagem_pendente": "src/assets/badges/mdl_3_cinza.png", "modulos": ["Modulo3_SegurancaDigital"], "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "numero": 5}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_4_col.png", "imagem_pendente": "src/assets/badges/mdl_4_cinza.png", "modulos": ["Modulo4_InteligenciaArtificial"], "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "numero": 6}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "numero": 7}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "numero": 8}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_6_col.png", "imagem_pendente": "src/assets/badges/mdl_6_cinza.png", "modulos": ["Modulo6_AcessibilidadeDigital"], "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "numero": 9}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_7_col.png", "imagem_pendente": "src/assets/badges/mdl_7_cinza.png", "modulos": ["Modulo7_TecnologiaESG"], "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "numero": 10}], "modulos": [{"id": 1, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 2, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 3, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 4, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 5, "imagem": "src/assets/badges/mdl_3_cinza.png", "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "status": "bloqueado"}, {"id": 6, "imagem": "src/assets/badges/mdl_4_cinza.png", "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "status": "bloqueado"}, {"id": 7, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 8, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 9, "imagem": "src/assets/badges/mdl_6_cinza.png", "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "status": "bloqueado"}, {"id": 10, "imagem": "src/assets/badges/mdl_7_cinza.png", "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "status": "bloqueado"}], "nome": "Maria Eduarda", "progresso_insignias": {"conquistadas": 0, "percentual": 0, "total": 10}}, {"email": "silvazmariax333@gmail.com", "insignias": ["Modulo1_InclusaoDigital"], "insignias_status": [{"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "numero": 1}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "numero": 2}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 3}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 4}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_3_col.png", "imagem_pendente": "src/assets/badges/mdl_3_cinza.png", "modulos": ["Modulo3_SegurancaDigital"], "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "numero": 5}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_4_col.png", "imagem_pendente": "src/assets/badges/mdl_4_cinza.png", "modulos": ["Modulo4_InteligenciaArtificial"], "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "numero": 6}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "numero": 7}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "numero": 8}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_6_col.png", "imagem_pendente": "src/assets/badges/mdl_6_cinza.png", "modulos": ["Modulo6_AcessibilidadeDigital"], "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "numero": 9}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_7_col.png", "imagem_pendente": "src/assets/badges/mdl_7_cinza.png", "modulos": ["Modulo7_TecnologiaESG"], "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "numero": 10}], "modulos": [{"id": 1, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 2, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 3, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 4, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 5, "imagem": "src/assets/badges/mdl_3_cinza.png", "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "status": "bloqueado"}, {"id": 6, "imagem": "src/assets/badges/mdl_4_cinza.png", "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "status": "bloqueado"}, {"id": 7, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 8, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 9, "imagem": "src/assets/badges/mdl_6_cinza.png", "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "status": "bloqueado"}, {"id": 10, "imagem": "src/assets/badges/mdl_7_cinza.png", "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "status": "bloqueado"}], "nome": "Maria Livia", "progresso_insignias": {"conquistadas": 0, "percentual": 0, "total": 10}}, {"email": "soutopedro24@gmail.com", "insignias": ["Modulo1_InclusaoDigital"], "insignias_status": [{"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "numero": 1}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "numero": 2}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 3}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 4}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_3_col.png", "imagem_pendente": "src/assets/badges/mdl_3_cinza.png", "modulos": ["Modulo3_SegurancaDigital"], "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "numero": 5}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_4_col.png", "imagem_pendente": "src/assets/badges/mdl_4_cinza.png", "modulos": ["Modulo4_InteligenciaArtificial"], "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "numero": 6}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "numero": 7}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "numero": 8}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_6_col.png", "imagem_pendente": "src/assets/badges/mdl_6_cinza.png", "modulos": ["Modulo6_AcessibilidadeDigital"], "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "numero": 9}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_7_col.png", "imagem_pendente": "src/assets/badges/mdl_7_cinza.png", "modulos": ["Modulo7_TecnologiaESG"], "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "numero": 10}], "modulos": [{"id": 1, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 2, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 3, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 4, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 5, "imagem": "src/assets/badges/mdl_3_cinza.png", "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "status": "bloqueado"}, {"id": 6, "imagem": "src/assets/badges/mdl_4_cinza.png", "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "status": "bloqueado"}, {"id": 7, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 8, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 9, "imagem": "src/assets/badges/mdl_6_cinza.png", "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "status": "bloqueado"}, {"id": 10, "imagem": "src/assets/badges/mdl_7_cinza.png", "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "status": "bloqueado"}], "nome": "Pedro Barbosa", "progresso_insignias": {"conquistadas": 0, "percentual": 0, "total": 10}}, {"email": "trindadeferreirarayane@gmail.com", "insignias": ["Modulo1_InclusaoDigital"], "insignias_status": [{"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "numero": 1}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "numero": 2}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 3}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 4}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_3_col.png", "imagem_pendente": "src/assets/badges/mdl_3_cinza.png", "modulos": ["Modulo3_SegurancaDigital"], "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "numero": 5}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_4_col.png", "imagem_pendente": "src/assets/badges/mdl_4_cinza.png", "modulos": ["Modulo4_InteligenciaArtificial"], "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "numero": 6}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "numero": 7}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "numero": 8}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_6_col.png", "imagem_pendente": "src/assets/badges/mdl_6_cinza.png", "modulos": ["Modulo6_AcessibilidadeDigital"], "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "numero": 9}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_7_col.png", "imagem_pendente": "src/assets/badges/mdl_7_cinza.png", "modulos": ["Modulo7_TecnologiaESG"], "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "numero": 10}], "modulos": [{"id": 1, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 2, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 3, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 4, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 5, "imagem": "src/assets/badges/mdl_3_cinza.png", "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "status": "bloqueado"}, {"id": 6, "imagem": "src/assets/badges/mdl_4_cinza.png", "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "status": "bloqueado"}, {"id": 7, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 8, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 9, "imagem": "src/assets/badges/mdl_6_cinza.png", "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "status": "bloqueado"}, {"id": 10, "imagem": "src/assets/badges/mdl_7_cinza.png", "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "status": "bloqueado"}], "nome": "Raiane Ferreira", "progresso_insignias": {"conquistadas": 0, "percentual": 0, "total": 10}}, {"email": "renatofarias959@gmail.com", "insignias": ["Modulo1_InclusaoDigital"], "insignias_status": [{"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "numero": 1}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "numero": 2}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 3}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "numero": 4}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_3_col.png", "imagem_pendente": "src/assets/badges/mdl_3_cinza.png", "modulos": ["Modulo3_SegurancaDigital"], "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "numero": 5}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_4_col.png", "imagem_pendente": "src/assets/badges/mdl_4_cinza.png", "modulos": ["Modulo4_InteligenciaArtificial"], "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "numero": 6}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "numero": 7}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "numero": 8}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_6_col.png", "imagem_pendente": "src/assets/badges/mdl_6_cinza.png", "modulos": ["Modulo6_AcessibilidadeDigital"], "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "numero": 9}, {"conquistada": false, "descricao": "", "imagem_conquistada": "src/assets/badges/mdl_7_col.png", "imagem_pendente": "src/assets/badges/mdl_7_cinza.png", "modulos": ["Modulo7_TecnologiaESG"], "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "numero": 10}], "modulos": [{"id": 1, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 1: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 2, "imagem": "src/assets/badges/mdl_1_cinza.png", "nome": "M\u00d3DULO 1 - PARTE 2: INCLUS\u00c3O DIGITAL", "status": "bloqueado"}, {"id": 3, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 4, "imagem": "src/assets/badges/mdl_2_cinza.png", "nome": "M\u00d3DULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "status": "bloqueado"}, {"id": 5, "imagem": "src/assets/badges/mdl_3_cinza.png", "nome": "M\u00d3DULO 3: SEGURAN\u00c7A DIGITAL, CIDADANIA E PRIVACIDADE", "status": "bloqueado"}, {"id": 6, "imagem": "src/assets/badges/mdl_4_cinza.png", "nome": "M\u00d3DULO 4: INTELIG\u00caNCIA ARTIFICIAL NA PR\u00c1TICA", "status": "bloqueado"}, {"id": 7, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 8, "imagem": "src/assets/badges/mdl_5_cinza.png", "nome": "M\u00d3DULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "status": "bloqueado"}, {"id": 9, "imagem": "src/assets/badges/mdl_6_cinza.png", "nome": "M\u00d3DULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "status": "bloqueado"}, {"id": 10, "imagem": "src/assets/badges/mdl_7_cinza.png", "nome": "M\u00d3DULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "status": "bloqueado"}], "nome": "Renato Farias", "progresso_insignias": {"conquistadas": 0, "percentual": 0, "total": 10}}]};
+    </script>
+    <script src="src/js/script.js" defer>
+    </script>
+</body>
+</html>
