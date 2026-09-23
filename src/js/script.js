@@ -27,16 +27,16 @@ const progressText = document.getElementById("progressText");
 lucide.createIcons();
 
 const modulosPadrao = [
-    {id: 1, nome: "MÓDULO 1 - PARTE 1: INCLUSÃO DIGITAL", imagem: "../assets/badges/mdl_1_col.png", status: "conquistada"},
-    {id: 2, nome: "MÓDULO 1 - PARTE 2: INCLUSÃO DIGITAL", imagem: "../assets/badges/mdl_1_col.png", status: "conquistada"},
-    {id: 3, nome: "MÓDULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", imagem: "../assets/badges/mdl_2_col.png", status: "conquistada"},
-    {id: 4, nome: "MÓDULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", imagem: "../assets/badges/mdl_2_col.png", status: "conquistada"},
-    {id: 5, nome: "MÓDULO 3: SEGURANÇA DIGITAL, CIDADANIA E PRIVACIDADE", imagem: "../assets/badges/mdl_3_col.png", status: "conquistada"},
-    {id: 6, nome: "MÓDULO 4: INTELIGÊNCIA ARTIFICIAL NA PRÁTICA", imagem: "../assets/badges/", status: "bloqueado"},
-    {id: 7, nome: "MÓDULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", imagem: "../assets/badges/mdl_5_cinza.png", status: "bloqueado"},
-    {id: 8, nome: "MÓDULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", imagem: "../assets/badges/mdl_5_cinza.png", status: "bloqueado"},
-    {id: 9, nome: "MÓDULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", imagem: "../assets/badges/mdl_6_cinza.png", status: "bloqueado"},
-    {id: 10, nome: "MÓDULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", imagem: "../assets/badges/mdl_7_cinza.png", status: "bloqueado"},
+    {id: 1, nome: "MÓDULO 1 - PARTE 1: INCLUSÃO DIGITAL", imagem: "src/assets/badges/mdl_1_col.png", status: "conquistada"},
+    {id: 2, nome: "MÓDULO 1 - PARTE 2: INCLUSÃO DIGITAL", imagem: "src/assets/badges/mdl_1_col.png", status: "conquistada"},
+    {id: 3, nome: "MÓDULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", imagem: "src/assets/badges/mdl_2_col.png", status: "conquistada"},
+    {id: 4, nome: "MÓDULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", imagem: "src/assets/badges/mdl_2_col.png", status: "conquistada"},
+    {id: 5, nome: "MÓDULO 3: SEGURANÇA DIGITAL, CIDADANIA E PRIVACIDADE", imagem: "src/assets/badges/mdl_3_col.png", status: "conquistada"},
+    {id: 6, nome: "MÓDULO 4: INTELIGÊNCIA ARTIFICIAL NA PRÁTICA", imagem: "src/assets/badges/mdl_4_cinza.png", status: "bloqueado"},
+    {id: 7, nome: "MÓDULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", imagem: "src/assets/badges/mdl_5_cinza.png", status: "bloqueado"},
+    {id: 8, nome: "MÓDULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", imagem: "src/assets/badges/mdl_5_cinza.png", status: "bloqueado"},
+    {id: 9, nome: "MÓDULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", imagem: "src/assets/badges/mdl_6_cinza.png", status: "bloqueado"},
+    {id: 10, nome: "MÓDULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", imagem: "src/assets/badges/mdl_7_cinza.png", status: "bloqueado"},
 ];
 
 let modulos;

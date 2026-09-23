@@ -69,7 +69,7 @@ def generate_site():
     environment = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=True)
     template = environment.get_template("index.html")
     OUTPUT_FILE.write_text(
-        template.render(aluno=student, alunos=students, insignias=DEFAULT_BADGES),
+        template.render(aluno=student, alunos=students, insignias=DEFAULT_BADGES, asset_prefix="src/"),
         encoding="utf-8",
     )
     print(f"Página gerada em {OUTPUT_FILE}")
