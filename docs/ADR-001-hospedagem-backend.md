@@ -1,10 +1,45 @@
-# ADR-001 — Hospedagem: PythonAnywhere (backend) + GitHub Pages (frontend)
+# ADR-001 — Hospedagem: PythonAnywhere
 
-- **Status:** proposto
+- **Status:** aceito, com a emenda de 2026-09-24 abaixo
 - **Data:** 2026-09-24
 - **Branch:** `refactor/pythonanywhere`
-- **Decisão:** adotar PythonAnywhere (free tier) para a API e o banco, mantendo
-  o frontend estático no GitHub Pages publicado via GitHub Actions.
+- **Decisão:** adotar PythonAnywhere (free tier) para a API, o banco **e o
+  frontend**, tudo na mesma origem.
+
+---
+
+## Emenda de 2026-09-24 — origem única
+
+A decisão original mantinha o frontend no GitHub Pages e a API no
+PythonAnywhere, e a seção 3.5 **rejeitava** explicitamente servir os dois do
+mesmo lugar. Essa rejeição foi revertida: o frontend passa a ser servido pelo
+PythonAnywhere junto com a API.
+
+**O que motivou a troca:** os custos que a rejeição original citava — perder o
+CDN e gastar cota de CPU com arquivo estático — são menores do que pareciam. O
+PythonAnywhere serve arquivo estático por mapeamento na aba Web, sem passar
+pelo processo da aplicação, então a cota de CPU praticamente não é afetada. Em
+troca, desaparecem de uma vez o CORS, o descompasso de versão entre dois
+deploys e a necessidade de configurar a URL da API.
+
+**O que piora, e é preciso aceitar com clareza:** a renovação trimestral
+obrigatória do free tier (seção 3.3, item 1) passa a derrubar **o site
+inteiro**, não apenas a API. Antes, uma API fora do ar ainda deixava a página
+carregar; agora é ponto único de falha. Somam-se a perda do CDN e do domínio
+próprio gratuito que o Pages oferecia.
+
+**O que muda na prática:**
+
+| | Antes | Agora |
+| --- | --- | --- |
+| Frontend | GitHub Pages | PythonAnywhere, mesma origem da API |
+| CORS | obrigatório, travado na origem do Pages | desligado por padrão |
+| Deploys | dois, sem atomicidade | um |
+| URL da API no frontend | configurada no build | caminho relativo |
+| GitHub Actions | publicava no Pages | só valida que o build roda |
+
+As seções 2, 3.1 e 3.5 abaixo foram atualizadas. O restante da ADR — banco,
+autenticação em fases, riscos do free tier — segue valendo sem alteração.
 
 ---
 
@@ -67,10 +102,15 @@ primeiro. A questão desta ADR é onde ele mora.
 
 | Camada | Onde | Responsabilidade |
 | --- | --- | --- |
-| Frontend estático | GitHub Pages | HTML, CSS, JS, imagens das insígnias |
-| Build do frontend | GitHub Actions | roda `src/generator.py` e publica |
+| Frontend estático | PythonAnywhere | HTML, CSS, JS, imagens das insígnias |
+| Build do frontend | PythonAnywhere, no deploy | `src/generator.py` gera `index.html` |
 | API | PythonAnywhere | login, presença, feedback, progresso |
 | Banco | PythonAnywhere | alunos, presenças, avaliações |
+| GitHub Actions | CI | apenas valida que o build roda; não publica |
+
+O `index.html` continua sendo gerado no deploy, e não renderizado a cada
+requisição: render por requisição gastaria cota de CPU à toa, e o conteúdo da
+casca só muda quando `data/curso.json` muda.
 
 O ponto central: **`data/alunos.json` deixa de conter e-mails**. O build passa a
 gerar apenas a casca da página (layout, módulos, imagens), e todo dado de aluno
@@ -80,16 +120,17 @@ passa a ser buscado da API após autenticação.
 
 ## 3. Tradeoffs
 
-### 3.1 GitHub Pages + Actions — o que ganhamos e o que perdemos
+### 3.1 GitHub Pages + Actions — por que saiu da hospedagem
 
-**A favor (e por isso fica)**
+**O que perdemos ao sair do Pages** (o preço da emenda de 2026-09-24)
 
-- Custo zero, CDN global, HTTPS automático, sem manutenção de servidor.
-- O pipeline de build já existe e já é entendido pela equipe.
-- Domínio próprio é gratuito no Pages (o do PythonAnywhere é pago).
-- Deploy é `git push`: reversível por `git revert`, com histórico.
+- CDN global e HTTPS automático sem manutenção de servidor.
+- Domínio próprio gratuito — no PythonAnywhere ele exige plano pago.
+- Deploy por `git push`, reversível por `git revert`, com histórico.
+- Independência entre as camadas: com o Pages, a página continuava no ar
+  mesmo com a API fora.
 
-**Contra (limites que forçam o backend)**
+**O que já não nos servia** (limites que forçavam o backend de todo jeito)
 
 - **Só serve arquivo estático.** Não executa código no servidor, não tem banco,
   não guarda estado entre visitas. Qualquer escrita precisa de outro lugar.
@@ -180,16 +221,44 @@ arquivo só, o que também simplifica a migração prevista na seção 5.
 `timeout`, ou se o LTD passar a rodar turmas simultâneas, reavaliar — as saídas
 são o MySQL de um plano pago ou um Postgres gerenciado externo.
 
-### 3.5 O custo de dividir em duas origens
+### 3.5 Origem única — decisão revista
 
-`gaia28.github.io` e `usuario.pythonanywhere.com` são sites distintos. Isso cria
-problemas que não existiriam num deploy único:
+**Decisão atual:** página e API são servidas pelo mesmo domínio do
+PythonAnywhere. O frontend chama a API por caminho relativo (`/api/v1/...`) e
+nada precisa ser configurado.
 
-- **Cookie de sessão não serve.** Vira cookie de terceiro: exige
-  `SameSite=None; Secure` e, ainda assim, Safari e Firefox bloqueiam por padrão.
-  **Decisão:** autenticação por token no cabeçalho `Authorization`, guardado em
-  `localStorage`. O contraponto é exposição a XSS — o que torna obrigatório não
-  injetar HTML de origem não confiável no DOM.
+Consequências diretas, todas a favor:
+
+- **CORS deixa de existir.** Some uma classe inteira de bug que só aparecia em
+  produção e só no console do navegador. A aplicação mantém suporte a CORS
+  desligado por padrão, ligado apenas se `PASSAPORTE_CORS_ORIGENS` for definida
+  — para o caso de algum dia o frontend sair daqui.
+- **Um deploy só.** Acaba o descampaso de versão entre frontend e API que
+  obrigava a versionar a API desde o primeiro commit. O `/api/v1/` fica assim
+  mesmo: custa nada e protege se um dia houver um consumidor externo.
+- **Arquivo estático não pesa na cota.** No PythonAnywhere, `/src/` é mapeado
+  como estático na aba Web e servido sem passar pelo processo da aplicação. As
+  rotas `/` e `/src/<path>` em `api/app.py` são o caminho de desenvolvimento e
+  a rede de segurança se o mapeamento faltar.
+
+#### Autenticação: o token continua, mas por outro motivo
+
+A decisão original era token no cabeçalho `Authorization` porque **cookie de
+sessão não funciona entre origens diferentes** — viraria cookie de terceiro,
+bloqueado por padrão em Safari e Firefox. Com origem única essa razão some:
+cookie passa a funcionar normalmente.
+
+**Mantemos o token mesmo assim**, por ora: ele já está implementado e testado,
+e trocar agora seria churn sem ganho imediato de funcionalidade.
+
+Fica registrado, porém, que **cookie `httpOnly` seria mais seguro**: hoje o
+token vive em `localStorage`, legível por qualquer JavaScript da página, então
+uma falha de XSS entrega a sessão. Um cookie `httpOnly` não é legível por
+script. Migrar exige tratar CSRF (que o token no header dispensava). Vale como
+melhoria futura, não como bloqueio.
+
+Enquanto o token estiver em `localStorage`, continua obrigatório **não injetar
+no DOM HTML de origem não confiável**.
 
 #### Como o token é emitido — entrega em duas fases
 
@@ -214,16 +283,14 @@ a sessão já nasce como tabela própria em vez de derivar do e-mail.
 
 **Pré-requisito da fase 2:** envio de e-mail depende da whitelist de saída do
 PythonAnywhere (seção 3.3, item 2). Verificar antes de planejar a fase.
-- **CORS** precisa ser configurado liberando exclusivamente a origem do Pages,
-  nunca `*`. Requisições com `Authorization` disparam preflight `OPTIONS`.
-- **Dois deploys sem atomicidade.** Mudou o contrato da API e o frontend no
-  Pages ainda é o antigo por alguns minutos. **Decisão:** versionar a API em
-  `/api/v1/` desde o primeiro commit.
+#### O que se perde com a origem única
 
-**Alternativa considerada:** servir o frontend também pelo PythonAnywhere. Isso
-elimina CORS e o problema de cookie de uma vez, ao custo de perder o CDN, o
-domínio próprio gratuito e o pipeline de build já pronto — além de gastar a
-escassa cota de CPU servindo arquivo estático. **Rejeitada** por isso.
+- **Ponto único de falha.** A renovação trimestral do free tier (seção 3.3,
+  item 1) agora derruba o site inteiro, não só a API. É o custo mais caro desta
+  emenda e o motivo de o lembrete de renovação ter dois responsáveis.
+- **Sem CDN** e **sem domínio próprio gratuito**.
+- A cota de CPU passa a cobrir também o tráfego da página — mitigado pelo
+  mapeamento estático, que não passa pela aplicação.
 
 ---
 
@@ -253,17 +320,19 @@ escassa cota de CPU servindo arquivo estático. **Rejeitada** por isso.
 
 **Negativas / dívidas assumidas**
 
-- Passa a existir um serviço para operar, com renovação trimestral obrigatória.
-- Duas superfícies de deploy para manter em sintonia.
-- Token em `localStorage` amplia a consequência de uma falha de XSS.
+- Passa a existir um serviço para operar, com renovação trimestral obrigatória
+  — e, com a origem única, essa renovação derruba o site inteiro se falhar.
+- Token em `localStorage` amplia a consequência de uma falha de XSS. Com origem
+  única, cookie `httpOnly` passa a ser uma alternativa viável (seção 3.5).
 - **Na fase 1 o acesso continua sendo apenas o e-mail**, sem segredo
   verificado. Dívida assumida com data para quitar na fase 2 (seção 3.5).
-- Surge uma classe nova de bug (CORS/preflight) que só aparece em produção.
+- Perda do CDN e do domínio próprio gratuito que o GitHub Pages dava.
 
-**Plano de saída:** se o PythonAnywhere se mostrar inviável, a API em Flask e o
-esquema relacional migram para qualquer hospedagem Python com disco. O frontend
-no Pages não muda — só a URL base da API. É o motivo de manter essa URL em um
-único ponto de configuração do frontend.
+**Plano de saída:** se o PythonAnywhere se mostrar inviável, a API em Flask, o
+esquema relacional e a pasta estática migram juntos para qualquer hospedagem
+Python com disco — é uma aplicação só. O frontend usa caminho relativo, então
+nada nele precisa ser reconfigurado; `PASSAPORTE_API_BASE` existe apenas para o
+caso de as camadas voltarem a ser separadas.
 
 ---
 
@@ -278,11 +347,15 @@ no Pages não muda — só a URL base da API. É o motivo de manter essa URL em 
       Versão escolhida no maior número disponível porque o PythonAnywhere não
       permite trocar a versão de um web app existente e o free tier dá direito a
       apenas um.
-- [ ] Corrigir `.github/workflows/deploy.yml`, que **hoje está com YAML
+- [ ] Reescrever `.github/workflows/deploy.yml`. Ele **hoje está com YAML
       inválido** — o step de notificação do Telegram não está indentado dentro
       da lista de steps (a partir da linha 56), além de `$ {{ secrets... }}` com
-      espaço e `parse_mode=Markdonw`. O workflow não executa no estado atual, e
-      este plano depende do Pages continuar publicando automaticamente.
+      espaço e `parse_mode=Markdonw`. Com a emenda de origem única ele deixa de
+      publicar no Pages e passa a ser só CI: roda `src/generator.py` e falha se
+      o build quebrar. Deixou de ser urgente, já que o deploy não depende mais
+      dele.
+- [ ] Mapear `/src/` como arquivo estático na aba Web do PythonAnywhere, para
+      que a página não gaste cota de CPU (seção 3.5).
 - [ ] **Remover os e-mails de `data/alunos.json` e do build estático como parte
       da mesma entrega que sobe a API** — não antes (quebra o acesso atual), não
       depois (mantém a exposição). Com o login por e-mail apenas da fase 1, este

@@ -1,14 +1,24 @@
-"""API do Passaporte Digital LTD.
+"""API e frontend do Passaporte Digital LTD.
 
-Hospedada no PythonAnywhere; o frontend estático vive no GitHub Pages. Como
-são origens diferentes, a autenticação é por token no cabeçalho
-`Authorization` — cookie de sessão não funcionaria (ADR-001, seção 3.5).
+Tudo é servido pelo PythonAnywhere, na mesma origem: a página estática e a
+API convivem sob o mesmo domínio (ADR-001, seção 3.5). Por isso não há CORS
+por padrão — ele só é ligado se PASSAPORTE_CORS_ORIGENS for definida, para o
+caso de um frontend hospedado fora.
 
-Rotas, todas sob /api/v1:
+Rotas da API, todas sob /api/v1:
     POST /login       e-mail (aluno) ou e-mail + senha (admin) -> token
     GET  /passaporte  módulos, insígnias e oficinas do aluno autenticado
     POST /presenca    registra presença numa oficina com a palavra-chave
     GET  /saude       diagnóstico, sem autenticação
+
+Rotas do frontend:
+    GET  /            index.html gerado por src/generator.py
+    GET  /src/<path>  js, css e imagens das insígnias
+
+Em produção, mapeie /src/ como arquivo estático na aba Web do PythonAnywhere:
+servido direto pelo servidor deles, sem passar por este processo nem gastar
+a cota de CPU. As rotas abaixo são o caminho de desenvolvimento e a rede de
+segurança se o mapeamento faltar.
 """
 
 import hashlib
@@ -16,20 +26,15 @@ import os
 import secrets
 import sqlite3
 from functools import wraps
+from pathlib import Path
 
-from flask import Flask, g, jsonify, request
-from flask_cors import CORS
+from flask import Flask, g, jsonify, request, send_from_directory
 from werkzeug.security import check_password_hash
 
 from db import get_db, init_app, transacao
 
-# Origem do frontend no GitHub Pages. Sem caminho e sem barra no fim: o
-# navegador compara apenas scheme + host, então o `/passaporte-digital-ltd/`
-# da URL publicada não entra aqui. Derivada do dono do repositório
-# (github.com/larissagarcia/passaporte-digital-ltd); confirme em
-# Settings -> Pages se houver domínio próprio. Sobrescreva com
-# PASSAPORTE_CORS_ORIGENS sem precisar editar este arquivo.
-ORIGENS_PADRAO = "https://larissagarcia.github.io"
+# Raiz do site estático: index.html gerado e a pasta src/.
+RAIZ_SITE = Path(__file__).resolve().parent.parent
 
 VALIDADE_ALUNO = "+30 days"  # aluno volta a cada oficina; relogar toda vez irrita
 VALIDADE_ADMIN = "+12 hours"  # admin mexe em dado de todo mundo
@@ -97,15 +102,29 @@ def create_app() -> Flask:
     app = Flask(__name__)
     init_app(app)
 
+    # Frontend e API na mesma origem: CORS não é necessário e fica desligado.
+    # Só é ligado se alguém hospedar o frontend fora — e mesmo assim restrito
+    # a /api/* e às origens listadas, nunca "*": com Authorization no header,
+    # um curinga liberaria a API para qualquer site.
     origens = [
         o.strip()
-        for o in os.environ.get("PASSAPORTE_CORS_ORIGENS", ORIGENS_PADRAO).split(",")
+        for o in os.environ.get("PASSAPORTE_CORS_ORIGENS", "").split(",")
         if o.strip()
     ]
-    # Só /api/*, só as origens listadas. Nunca "*": com Authorization no header
-    # isso libera a API para qualquer site.
-    CORS(app, resources={r"/api/*": {"origins": origens}},
-         allow_headers=["Content-Type", "Authorization"], max_age=3600)
+    if origens:
+        from flask_cors import CORS
+
+        CORS(app, resources={r"/api/*": {"origins": origens}},
+             allow_headers=["Content-Type", "Authorization"], max_age=3600)
+
+    @app.get("/")
+    def pagina():
+        return send_from_directory(RAIZ_SITE, "index.html")
+
+    @app.get("/src/<path:arquivo>")
+    def estaticos(arquivo):
+        # send_from_directory recusa caminhos que escapem da pasta.
+        return send_from_directory(RAIZ_SITE / "src", arquivo)
 
     @app.get("/api/v1/saude")
     def saude():

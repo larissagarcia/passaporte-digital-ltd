@@ -19,9 +19,11 @@ CURSO_FILE = PROJECT_ROOT / "data" / "curso.json"
 TEMPLATE_DIR = PROJECT_ROOT / "src" / "templates"
 OUTPUT_FILE = PROJECT_ROOT / "index.html"
 
-# Base da API em produção. O Actions pode sobrescrever com PASSAPORTE_API_BASE
-# sem editar código. Em localhost o script.js ignora isto e usa a porta 5000.
-API_BASE_PADRAO = "https://larissagarcia.pythonanywhere.com"
+# Vazio = mesma origem: a página e a API são servidas pelo mesmo servidor, então
+# o script.js monta um caminho relativo. Só preencha (via PASSAPORTE_API_BASE)
+# se o frontend for hospedado fora do PythonAnywhere — e, nesse caso, libere a
+# origem dele em PASSAPORTE_CORS_ORIGENS na API.
+API_BASE_PADRAO = ""
 
 
 def carregar_modulos():
@@ -69,7 +71,7 @@ def generate_site():
 
     oficinas = sum(len(m["oficinas"]) for m in modulos)
     print(f"Página gerada em {OUTPUT_FILE}")
-    print(f"  {len(modulos)} módulos, {oficinas} oficinas, API em {api_base}")
+    print(f"  {len(modulos)} módulos, {oficinas} oficinas, API em {api_base or 'mesma origem'}")
 
 
 if __name__ == "__main__":

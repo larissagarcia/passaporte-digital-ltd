@@ -1,10 +1,21 @@
 # API do Passaporte Digital
 
-Flask + SQLite, hospedada no PythonAnywhere. As decisões de arquitetura e os
-motivos por trás das regras deste diretório estão em
+Flask + SQLite, hospedada no PythonAnywhere — que também serve a página
+estática, na **mesma origem**. As decisões de arquitetura e os motivos por trás
+das regras deste diretório estão em
 [`docs/ADR-001-hospedagem-backend.md`](../docs/ADR-001-hospedagem-backend.md).
 
-## Rotas
+## Rotas do frontend
+
+| Método | Rota | O que serve |
+| --- | --- | --- |
+| `GET` | `/` | `index.html` gerado por `src/generator.py` |
+| `GET` | `/src/<path>` | JS e imagens das insígnias |
+
+Em produção, `/src/` é mapeado como estático na aba Web e nem chega a passar
+pela aplicação (ver abaixo).
+
+## Rotas da API
 
 Todas sob `/api/v1`. Respostas sempre em JSON, inclusive nos erros.
 
@@ -16,7 +27,9 @@ Todas sob `/api/v1`. Respostas sempre em JSON, inclusive nos erros.
 | `GET` | `/passaporte` | sim | módulos, insígnias e oficinas do aluno |
 | `POST` | `/presenca` | sim | registra presença com palavra-chave e avaliação |
 
-Autenticação é por cabeçalho, não por cookie (ADR-001, seção 3.5):
+Autenticação é por token no cabeçalho. Com origem única, cookie `httpOnly`
+passaria a ser possível e seria mais seguro — está registrado como melhoria
+futura na ADR-001, seção 3.5:
 
 ```
 Authorization: Bearer <token>
@@ -37,39 +50,29 @@ ainda sem palavra-chave configurada.
 
 ```bash
 python -m venv .venv && .venv/bin/pip install -r api/requirements.txt
-.venv/bin/python api/seed.py                 # cria ~/data/passaporte.db e popula
-.venv/bin/python api/app.py                  # sobe a API na porta 5000
+.venv/bin/python src/generator.py         # gera o index.html
+.venv/bin/python api/seed.py              # cria ~/data/passaporte.db e popula
+.venv/bin/python api/app.py               # página + API em http://localhost:5000
 ```
 
-Confira que subiu:
+Abra `http://localhost:5000`. **Um servidor só**: a página, os arquivos de
+`/src/` e a API saem todos da mesma origem, então não há CORS para configurar e
+o frontend chama a API por caminho relativo.
 
-```bash
-curl http://localhost:5000/api/v1/saude
-```
-
-> **São duas portas diferentes.** A API responde na **5000** e só atende rotas
-> sob `/api/v1` — abrir `http://localhost:5000/` dá `404`, porque ela não serve
-> página nenhuma. O frontend é estático e roda separado, normalmente na **8000**
-> via `python -m http.server 8000` na raiz do repositório.
-
-Com o frontend local em outra porta, ele é uma origem distinta da API e precisa
-ser liberado no CORS — senão o navegador bloqueia as chamadas:
-
-```bash
-export PASSAPORTE_CORS_ORIGENS="http://localhost:8000,https://gaia28.github.io"
-.venv/bin/python api/app.py
-```
+Rode `src/generator.py` de novo sempre que mexer em `data/curso.json` ou no
+template — o `index.html` é gerado no build, não a cada requisição.
 
 ## Variáveis de ambiente
 
 | Variável | Padrão | Para quê |
 | --- | --- | --- |
 | `PASSAPORTE_DB` | `~/data/passaporte.db` | caminho do banco |
-| `PASSAPORTE_CORS_ORIGENS` | `https://gaia28.github.io` | origens liberadas, separadas por vírgula |
+| `PASSAPORTE_CORS_ORIGENS` | vazio (CORS desligado) | só se o frontend for hospedado fora |
+| `PASSAPORTE_API_BASE` | vazio (mesma origem) | lido por `src/generator.py`, idem |
 
 No PythonAnywhere o padrão de `PASSAPORTE_DB` já resolve para
 `/home/<usuário>/data/passaporte.db`, que é onde a ADR manda o arquivo ficar —
-não precisa configurar.
+não precisa configurar nada.
 
 ## Publicar no PythonAnywhere
 
@@ -77,11 +80,12 @@ não precisa configurar.
 git clone <repo> ~/passaporte-digital-ltd
 cd ~/passaporte-digital-ltd && git checkout refactor/pythonanywhere
 pip install -r api/requirements.txt          # com o virtualenv 3.13 ativo
-python api/seed.py
+python src/generator.py                      # gera o index.html
+python api/seed.py                           # cria e popula o banco
 ```
 
-Depois aponte o arquivo WSGI (aba **Web** → *WSGI configuration file*) para a
-aplicação e clique em **Reload**:
+Na aba **Web**, aponte o arquivo WSGI (*WSGI configuration file*) para a
+aplicação:
 
 ```python
 import sys
@@ -93,7 +97,27 @@ if CAMINHO not in sys.path:
 from app import app as application  # noqa: E402
 ```
 
-O `mysite/` criado pelo assistente não é mais usado.
+Ainda na aba **Web**, em **Static files**, mapeie:
+
+| URL | Directory |
+| --- | --- |
+| `/src/` | `/home/<usuário>/passaporte-digital-ltd/src/` |
+
+Isso faz o servidor do PythonAnywhere entregar JS e imagens direto, sem passar
+pela aplicação nem consumir a cota de CPU. As rotas `/src/<path>` em `app.py`
+continuam existindo como rede de segurança e para o desenvolvimento local.
+
+Clique em **Reload**. O `mysite/` criado pelo assistente não é mais usado.
+
+### Atualizar depois de um push
+
+```bash
+cd ~/passaporte-digital-ltd && git pull
+python src/generator.py                      # se o template ou o curso mudou
+python api/seed.py                           # se data/curso.json mudou
+```
+
+E **Reload** na aba Web — o código só é recarregado aí.
 
 ### Backup
 

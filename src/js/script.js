@@ -33,11 +33,10 @@ const accessError       = document.getElementById("accessError");
 
 const config = window.passaporteConfig ?? {apiBase: "", modulos: []};
 
-// Em desenvolvimento a API sobe na 5000 e o frontend costuma ser servido na
-// 8000. São origens diferentes: lembre de liberar a sua no CORS da API.
-const API = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
-    ? "http://localhost:5000/api/v1"
-    : `${config.apiBase}/api/v1`;
+// Página e API vêm do mesmo servidor, então o caminho é relativo e nada
+// precisa ser configurado. `apiBase` só é preenchido se algum dia o frontend
+// for hospedado fora — aí a API precisa liberar aquela origem no CORS.
+const API = `${(config.apiBase || "").replace(/\/+$/, "")}/api/v1`;
 
 const TOKEN_KEY = "ltd-token";
 
