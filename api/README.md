@@ -35,6 +35,46 @@ futura na ADR-001, seção 3.5:
 Authorization: Bearer <token>
 ```
 
+## Painel da coordenação
+
+Em `/admin`. Exige login de administrador (e-mail + senha). Rotas em
+`admin.py`, todas sob `/api/v1/admin` e protegidas por `exige_admin`.
+
+| Método | Rota | O que faz |
+| --- | --- | --- |
+| `GET` | `/resumo` | totais e progresso de cada aluno |
+| `GET` | `/modulos` | módulos com suas oficinas e palavras-chave |
+| `POST` `PATCH` `DELETE` | `/modulos[/<id>]` | criar, editar e apagar módulo |
+| `POST` `PATCH` `DELETE` | `/oficinas[/<id>]` | criar, editar e apagar oficina |
+| `GET` | `/feedback` | média de estrelas e comentários por oficina |
+| `GET` `POST` `PATCH` | `/usuarios[/<id>]` | listar, criar e editar usuários |
+| `POST` `DELETE` | `/presencas` | lançar ou remover presença manualmente |
+
+### Regras que o painel garante
+
+- **Módulo com oficina e oficina com presença não são apagados** (`409`).
+  Apagar uma oficina com presenças destruiria o registro de quem esteve lá.
+- **Aluno não é apagado, é desativado.** As presenças continuam contando nas
+  médias e o histórico da turma não some.
+- **Ninguém se tranca para fora:** um admin não pode desativar a própria conta
+  nem mudar o próprio papel.
+- **Desativar ou rebaixar derruba as sessões abertas** daquela pessoa — sem
+  isso ela continuaria entrando com o token que já tinha.
+- **A palavra-chave definida no painel sobrevive ao `seed.py`.** O seed só
+  define a palavra-chave ao criar a oficina; depois disso quem manda é o
+  painel.
+
+### Criar o primeiro administrador
+
+Não há como criar o primeiro pelo painel — é preciso estar logado para usá-lo.
+Use o seed, que pede a senha sem deixá-la no histórico do shell:
+
+```bash
+python api/seed.py --admin coordenacao@ltd.org
+```
+
+Os administradores seguintes podem ser criados pela aba **Usuários**.
+
 ### `POST /presenca`
 
 ```json

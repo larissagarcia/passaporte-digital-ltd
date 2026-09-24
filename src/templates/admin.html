@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style type="text/tailwindcss">
+        @custom-variant dark (&:where(.dark, .dark *));
+    </style>
+
+    <title>Painel da Coordenação — Passaporte Digital LTD</title>
+</head>
+<body class="min-h-screen bg-[#F8FAFC] text-[#1E293B] transition-colors duration-300 dark:bg-[#111214] dark:text-white">
+
+    <header class="sticky top-0 z-30 border-b border-slate-200 bg-[#F8FAFC]/95 backdrop-blur-md dark:border-white/10 dark:bg-[#111214]/95">
+        <div class="mx-auto flex h-[70px] max-w-6xl items-center justify-between gap-4 px-4 sm:px-8">
+            <div class="min-w-0">
+                <h1 class="truncate text-lg font-bold tracking-wide text-[#ff2a00] sm:text-xl">
+                    PAINEL DA COORDENAÇÃO
+                </h1>
+                <p id="adminNome" class="truncate text-xs text-slate-500 dark:text-gray-400"></p>
+            </div>
+
+            <div class="flex shrink-0 items-center gap-2">
+                <a href="/" class="hidden h-10 items-center rounded-xl px-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200 dark:text-gray-400 dark:hover:bg-white/10 sm:flex">
+                    Ver o passaporte
+                </a>
+                <button id="themeToggle" type="button" aria-label="Alternar tema"
+                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-200 transition hover:bg-slate-300 dark:bg-white/5 dark:hover:bg-white/10">
+                    <i data-lucide="sun" class="h-5 w-5 text-orange-500 dark:hidden"></i>
+                    <i data-lucide="moon" class="hidden h-5 w-5 text-blue-300 dark:block"></i>
+                </button>
+                <button id="logoutButton" type="button"
+                    class="flex h-10 items-center gap-2 rounded-xl bg-slate-200 px-3 text-sm font-medium transition hover:bg-slate-300 dark:bg-white/5 dark:hover:bg-white/10">
+                    <i data-lucide="log-out" class="h-4 w-4"></i>
+                    <span class="hidden sm:inline">Sair</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="painel" class="mx-auto hidden max-w-6xl px-4 py-8 sm:px-8">
+
+        <!--Cartões de resumo-->
+        <section id="totais" class="grid grid-cols-2 gap-3 sm:grid-cols-4"></section>
+
+        <!--Aviso de oficinas sem palavra-chave-->
+        <div id="avisoChaves" class="mt-6 hidden rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300"></div>
+
+        <!--Abas-->
+        <nav class="mt-8 flex gap-1 overflow-x-auto border-b border-slate-200 dark:border-white/10">
+            <button data-aba="turma"    class="aba shrink-0 border-b-2 px-4 py-3 text-sm font-bold transition">Turma</button>
+            <button data-aba="oficinas" class="aba shrink-0 border-b-2 px-4 py-3 text-sm font-bold transition">Módulos e oficinas</button>
+            <button data-aba="feedback" class="aba shrink-0 border-b-2 px-4 py-3 text-sm font-bold transition">Feedback</button>
+            <button data-aba="usuarios" class="aba shrink-0 border-b-2 px-4 py-3 text-sm font-bold transition">Usuários</button>
+        </nav>
+
+        <div id="painelErro" class="mt-6 hidden rounded-2xl bg-red-500/10 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400"></div>
+        <div id="painelOk"   class="mt-6 hidden rounded-2xl bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-600 dark:text-emerald-400"></div>
+
+        <section id="conteudoTurma"    class="conteudo mt-6"></section>
+        <section id="conteudoOficinas" class="conteudo mt-6 hidden"></section>
+        <section id="conteudoFeedback" class="conteudo mt-6 hidden"></section>
+        <section id="conteudoUsuarios" class="conteudo mt-6 hidden"></section>
+    </main>
+
+    <!--Login-->
+    <div id="accessModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+        <form id="accessForm" class="w-full max-w-md rounded-3xl border border-slate-200/80 bg-white p-8 shadow-2xl dark:border-white/10 dark:bg-[#191A1E]">
+            <h2 class="text-xl font-bold">Acesso da coordenação</h2>
+            <p class="mt-2 text-sm text-slate-500 dark:text-gray-400">
+                Entre com o e-mail e a senha de administrador.
+            </p>
+
+            <label for="accessEmail" class="mt-6 block text-sm font-medium">E-mail</label>
+            <input id="accessEmail" type="email" autocomplete="email" required placeholder="coordenacao@ltd.org"
+                class="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-transparent px-4 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 dark:border-white/20">
+
+            <label for="accessSenha" class="mt-4 block text-sm font-medium">Senha</label>
+            <input id="accessSenha" type="password" autocomplete="current-password" required
+                class="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-transparent px-4 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 dark:border-white/20">
+
+            <p id="accessError" class="mt-4 hidden rounded-2xl bg-red-500/10 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400"></p>
+
+            <button type="submit"
+                class="mt-6 h-14 w-full rounded-2xl bg-gradient-to-r from-orange-600 to-red-400 font-bold text-white shadow-lg shadow-orange-500/20 transition hover:brightness-110 disabled:opacity-50">
+                ENTRAR
+            </button>
+        </form>
+    </div>
+
+    <script>
+        window.passaporteConfig = { apiBase: {{ api_base|tojson }} };
+    </script>
+    <script src="src/js/admin.js" defer></script>
+</body>
+</html>

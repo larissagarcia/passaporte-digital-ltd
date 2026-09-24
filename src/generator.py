@@ -18,6 +18,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CURSO_FILE = PROJECT_ROOT / "data" / "curso.json"
 TEMPLATE_DIR = PROJECT_ROOT / "src" / "templates"
 OUTPUT_FILE = PROJECT_ROOT / "index.html"
+OUTPUT_ADMIN = PROJECT_ROOT / "admin.html"
 
 # Vazio = mesma origem: a página e a API são servidas pelo mesmo servidor, então
 # o script.js monta um caminho relativo. Só preencha (via PASSAPORTE_API_BASE)
@@ -63,14 +64,20 @@ def generate_site():
     api_base = os.environ.get("PASSAPORTE_API_BASE", API_BASE_PADRAO).rstrip("/")
 
     environment = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=True)
-    template = environment.get_template("index.html")
+
     OUTPUT_FILE.write_text(
-        template.render(modulos=modulos, api_base=api_base),
+        environment.get_template("index.html").render(modulos=modulos, api_base=api_base),
+        encoding="utf-8",
+    )
+    # O painel não recebe `modulos`: a coordenação sempre vê o estado atual do
+    # banco, não um retrato do último build.
+    OUTPUT_ADMIN.write_text(
+        environment.get_template("admin.html").render(api_base=api_base),
         encoding="utf-8",
     )
 
     oficinas = sum(len(m["oficinas"]) for m in modulos)
-    print(f"Página gerada em {OUTPUT_FILE}")
+    print(f"Páginas geradas em {OUTPUT_FILE} e {OUTPUT_ADMIN}")
     print(f"  {len(modulos)} módulos, {oficinas} oficinas, API em {api_base or 'mesma origem'}")
 
 

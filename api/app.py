@@ -11,8 +11,11 @@ Rotas da API, todas sob /api/v1:
     POST /presenca    registra presença numa oficina com a palavra-chave
     GET  /saude       diagnóstico, sem autenticação
 
+As rotas da coordenação ficam em admin.py, sob /api/v1/admin.
+
 Rotas do frontend:
     GET  /            index.html gerado por src/generator.py
+    GET  /admin       admin.html, o painel da coordenação
     GET  /src/<path>  js, css e imagens das insígnias
 
 Em produção, mapeie /src/ como arquivo estático na aba Web do PythonAnywhere:
@@ -21,79 +24,20 @@ a cota de CPU. As rotas abaixo são o caminho de desenvolvimento e a rede de
 segurança se o mapeamento faltar.
 """
 
-import hashlib
 import os
-import secrets
 import sqlite3
-from functools import wraps
 from pathlib import Path
 
 from flask import Flask, g, jsonify, request, send_from_directory
 from werkzeug.security import check_password_hash
 
+from admin import admin as blueprint_admin
+from auth import (VALIDADE_ADMIN, VALIDADE_ALUNO, emitir_token, erro,
+                  exige_login, hash_token)
 from db import get_db, init_app, transacao
 
 # Raiz do site estático: index.html gerado e a pasta src/.
 RAIZ_SITE = Path(__file__).resolve().parent.parent
-
-VALIDADE_ALUNO = "+30 days"  # aluno volta a cada oficina; relogar toda vez irrita
-VALIDADE_ADMIN = "+12 hours"  # admin mexe em dado de todo mundo
-
-
-# --- Autenticação -----------------------------------------------------------
-
-
-def _hash(token: str) -> str:
-    """O banco guarda só o hash — ver comentário da tabela `sessoes`."""
-    return hashlib.sha256(token.encode()).hexdigest()
-
-
-def erro(mensagem: str, status: int, **extra):
-    return jsonify({"erro": mensagem, **extra}), status
-
-
-def exige_login(funcao):
-    """Resolve o token do header e põe o usuário em `g.usuario`."""
-
-    @wraps(funcao)
-    def wrapper(*args, **kwargs):
-        cabecalho = request.headers.get("Authorization", "")
-        if not cabecalho.startswith("Bearer "):
-            return erro("Envie o token em Authorization: Bearer <token>.", 401)
-
-        token = cabecalho.removeprefix("Bearer ").strip()
-        if not token:
-            return erro("Token vazio.", 401)
-
-        usuario = get_db().execute(
-            """SELECT u.id, u.nome, u.email, u.papel
-                 FROM sessoes s JOIN usuarios u ON u.id = s.usuario_id
-                WHERE s.token_hash = ?
-                  AND s.expira_em > datetime('now')
-                  AND u.ativo = 1""",
-            (_hash(token),),
-        ).fetchone()
-
-        if usuario is None:
-            return erro("Sessão inválida ou expirada. Entre novamente.", 401)
-
-        g.usuario = usuario
-        return funcao(*args, **kwargs)
-
-    return wrapper
-
-
-def emitir_token(usuario_id: int, validade: str) -> str:
-    token = secrets.token_urlsafe(32)
-    with transacao() as db:
-        db.execute("DELETE FROM sessoes WHERE expira_em <= datetime('now')")
-        db.execute(
-            "INSERT INTO sessoes (token_hash, usuario_id, expira_em)"
-            " VALUES (?, ?, datetime('now', ?))",
-            (_hash(token), usuario_id, validade),
-        )
-    return token
-
 
 # --- Aplicação --------------------------------------------------------------
 
@@ -101,6 +45,7 @@ def emitir_token(usuario_id: int, validade: str) -> str:
 def create_app() -> Flask:
     app = Flask(__name__)
     init_app(app)
+    app.register_blueprint(blueprint_admin)
 
     # Frontend e API na mesma origem: CORS não é necessário e fica desligado.
     # Só é ligado se alguém hospedar o frontend fora — e mesmo assim restrito
@@ -120,6 +65,10 @@ def create_app() -> Flask:
     @app.get("/")
     def pagina():
         return send_from_directory(RAIZ_SITE, "index.html")
+
+    @app.get("/admin")
+    def pagina_admin():
+        return send_from_directory(RAIZ_SITE, "admin.html")
 
     @app.get("/src/<path:arquivo>")
     def estaticos(arquivo):
@@ -175,7 +124,7 @@ def create_app() -> Flask:
     def logout():
         token = request.headers["Authorization"].removeprefix("Bearer ").strip()
         with transacao() as db:
-            db.execute("DELETE FROM sessoes WHERE token_hash = ?", (_hash(token),))
+            db.execute("DELETE FROM sessoes WHERE token_hash = ?", (hash_token(token),))
         return jsonify({"ok": True})
 
     @app.get("/api/v1/passaporte")

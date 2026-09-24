@@ -57,8 +57,11 @@ def carregar_curso(conexao: sqlite3.Connection) -> dict[str, int]:
                         ordem = excluded.ordem,
                         nome = excluded.nome,
                         descricao = excluded.descricao,
-                        data = excluded.data,
-                        palavra_chave = excluded.palavra_chave""",
+                        data = excluded.data""",
+                # palavra_chave de propósito fora do UPDATE: ela só é definida
+                # na criação da oficina. Depois disso quem manda é o painel de
+                # admin — reexecutar o seed não pode desfazer a chave que a
+                # coordenação acabou de configurar para a oficina de hoje.
                 {**oficina, "modulo_id": modulo_id},
             )
             ids_por_slug[oficina["slug"]] = conexao.execute(
