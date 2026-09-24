@@ -108,6 +108,7 @@ function modulosVazios(){
 }
 
 let aluno = null;
+let hojeServidor = null;  // data local do LTD, vinda da API
 let modulos = modulosVazios();
 let currentModuleNumero = modulos[0]?.numero ?? 1;
 let selectedRating = 0;
@@ -118,6 +119,17 @@ function moduloAtual(){
 
 function oficinasPendentes(modulo){
     return (modulo?.oficinas ?? []).filter(o => !o.presente);
+}
+
+// A presença só vale no dia da oficina. Quem decide que dia é hoje é o
+// servidor: o relógio do celular do aluno pode estar errado ou em outro fuso.
+function ehHoje(oficina){
+    return Boolean(oficina?.data) && oficina.data === hojeServidor;
+}
+
+function oficinaSelecionada(){
+    const slug = oficinaSelect?.value;
+    return (moduloAtual()?.oficinas ?? []).find(o => o.slug === slug) ?? null;
 }
 
 // --- Renderização -----------------------------------------------------------
@@ -271,26 +283,54 @@ function renderOficinaOptions(modulo){
         pendentes.forEach(oficina => {
             const option = document.createElement("option");
             option.value = oficina.slug;
-            option.textContent = oficina.nome;
+            option.textContent = ehHoje(oficina)
+                ? `${oficina.nome} (hoje)`
+                : `${oficina.nome}${oficina.data ? ` — ${formatarData(oficina.data)}` : " — sem data"}`;
             oficinaSelect.appendChild(option);
         });
+
+        // Já abre na oficina de hoje, se houver: é a que o aluno veio registrar.
+        const deHoje = pendentes.find(ehHoje);
+        if(deHoje) oficinaSelect.value = deHoje.slug;
     }
 
     atualizarDataOficina();
+    avisarSeNaoEhHoje();
+}
+
+function formatarData(iso){
+    return new Date(`${iso}T00:00:00`).toLocaleDateString('pt-br');
 }
 
 function atualizarDataOficina(){
     if(!dateWorkshop) return;
 
-    const modulo = moduloAtual();
-    const slug = oficinaSelect?.value;
-    const oficina = (modulo?.oficinas ?? []).find(o => o.slug === slug);
-
+    const oficina = oficinaSelecionada();
     const data = oficina?.data
-        ? new Date(`${oficina.data}T00:00:00`).toLocaleDateString('pt-br')
-        : new Date().toLocaleDateString('pt-br');
+        ? formatarData(oficina.data)
+        : (hojeServidor ? formatarData(hojeServidor) : "");
 
-    dateWorkshop.innerHTML = `Data: ${data}`;
+    dateWorkshop.innerHTML = data ? `Data: ${data}` : "Data: a definir";
+}
+
+/** Explica por que o botão está travado, em vez de deixar o aluno no escuro. */
+function avisarSeNaoEhHoje(){
+    const oficina = oficinaSelecionada();
+    if(!oficina || ehHoje(oficina)){
+        limparErroPresenca();
+        return;
+    }
+
+    if(!oficina.data){
+        mostrarErroPresenca("Esta oficina ainda não tem data marcada. "
+            + "Avise a coordenação do LTD.");
+    } else if(oficina.data > hojeServidor){
+        mostrarErroPresenca(`Esta oficina é dia ${formatarData(oficina.data)}. `
+            + "A presença só pode ser registrada no dia.");
+    } else {
+        mostrarErroPresenca(`Esta oficina foi dia ${formatarData(oficina.data)}. `
+            + "Fale com a coordenação do LTD para registrar sua presença.");
+    }
 }
 
 // --- Estrelas ---------------------------------------------------------------
@@ -348,8 +388,9 @@ function limparErroPresenca(){
 }
 
 function updateButton(){
-    const temOficina = Boolean(oficinaSelect?.value);
-    rescueButton.disabled = !(aluno && temOficina && keyword.value.trim() && selectedRating > 0);
+    const oficina = oficinaSelecionada();
+    rescueButton.disabled = !(aluno && oficina && ehHoje(oficina)
+        && keyword.value.trim() && selectedRating > 0);
 }
 
 function resetPresenceForm(){
@@ -357,6 +398,7 @@ function resetPresenceForm(){
     selectedRating = 0;
     limparErroPresenca();
     updateStars();
+    avisarSeNaoEhHoje();
     updateButton();
 }
 
@@ -368,6 +410,7 @@ keyword.addEventListener("input", () => {
 oficinaSelect?.addEventListener("change", () => {
     limparErroPresenca();
     atualizarDataOficina();
+    avisarSeNaoEhHoje();
     updateButton();
 });
 
@@ -427,6 +470,11 @@ async function carregarPassaporte(){
 
     aluno = dados.aluno;
     modulos = dados.modulos;
+    hojeServidor = dados.hoje;
+
+    // Abre no módulo que tem oficina hoje: é o motivo de o aluno estar na tela.
+    const comHoje = modulos.find(m => (m.oficinas ?? []).some(o => !o.presente && o.data === hojeServidor));
+    if(comHoje) currentModuleNumero = comHoje.numero;
 
     if(!modulos.some(m => m.numero === currentModuleNumero)){
         currentModuleNumero = modulos[0]?.numero ?? 1;

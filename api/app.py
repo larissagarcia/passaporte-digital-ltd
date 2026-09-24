@@ -8,7 +8,8 @@ caso de um frontend hospedado fora.
 Rotas da API, todas sob /api/v1:
     POST /login       e-mail (aluno) ou e-mail + senha (admin) -> token
     GET  /passaporte  módulos, insígnias e oficinas do aluno autenticado
-    POST /presenca    registra presença numa oficina com a palavra-chave
+    POST /presenca    registra presença numa oficina com a palavra-chave,
+                      apenas no dia da oficina
     GET  /saude       diagnóstico, sem autenticação
 
 As rotas da coordenação ficam em admin.py, sob /api/v1/admin.
@@ -35,6 +36,7 @@ from admin import admin as blueprint_admin
 from auth import (VALIDADE_ADMIN, VALIDADE_ALUNO, emitir_token, erro,
                   exige_login, hash_token)
 from db import get_db, init_app, transacao
+from tempo import formatar_br, hoje_iso
 
 # Raiz do site estático: index.html gerado e a pasta src/.
 RAIZ_SITE = Path(__file__).resolve().parent.parent
@@ -168,6 +170,9 @@ def create_app() -> Flask:
 
         return jsonify({
             "aluno": {"nome": g.usuario["nome"], "email": g.usuario["email"]},
+            # A tela compara com esta data, não com o relógio do aparelho: o
+            # celular do aluno pode estar com data errada ou em outro fuso.
+            "hoje": hoje_iso(),
             "progresso": {
                 "conquistadas": conquistadas,
                 "total": total,
@@ -203,11 +208,33 @@ def create_app() -> Flask:
 
         db = get_db()
         oficina = db.execute(
-            "SELECT id, modulo_id, nome, palavra_chave FROM oficinas WHERE slug = ?",
+            "SELECT id, modulo_id, nome, data, palavra_chave FROM oficinas WHERE slug = ?",
             (slug,),
         ).fetchone()
         if oficina is None:
             return erro("Oficina não encontrada.", 404)
+
+        # A presença do aluno só vale no dia da oficina. Conferido antes da
+        # palavra-chave: no dia errado, saber que a chave estava certa não
+        # ajuda em nada e só confunde.
+        #
+        # Comparação pela data LOCAL, não por date('now') do SQLite, que é UTC
+        # — numa oficina da noite o UTC já virou o dia seguinte (ver tempo.py).
+        #
+        # Oficina sem data marcada não aceita presença: o mesmo critério do
+        # 'DEFINIR' abaixo, falhar fechado em vez de aceitar qualquer dia.
+        if not oficina["data"]:
+            return erro("Esta oficina ainda não tem data marcada. "
+                        "Avise a coordenação do LTD.", 409)
+
+        hoje = hoje_iso()
+        if oficina["data"] != hoje:
+            quando = formatar_br(oficina["data"])
+            if oficina["data"] > hoje:
+                return erro(f"Esta oficina é dia {quando}. "
+                            "A presença só pode ser registrada no dia.", 409)
+            return erro(f"Esta oficina foi dia {quando} e a presença não foi "
+                        "registrada. Fale com a coordenação do LTD.", 409)
 
         # Oficina não configurada não pode validar presença: 'DEFINIR' é o valor
         # que o seed deixa, e aceitá-lo liberaria presença para qualquer um.

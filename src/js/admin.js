@@ -109,6 +109,8 @@ function renderTotais(){
         {rotulo: "Oficinas", valor: t.oficinas, icone: "calendar-days"},
         {rotulo: "Sem palavra-chave", valor: t.oficinas_sem_palavra_chave, icone: "key-round",
          alerta: t.oficinas_sem_palavra_chave > 0},
+        {rotulo: "Sem data", valor: t.oficinas_sem_data, icone: "calendar-x",
+         alerta: t.oficinas_sem_data > 0},
     ];
 
     totais.innerHTML = cartoes.map(c => `
@@ -121,10 +123,20 @@ function renderTotais(){
         </div>
     `).join("");
 
+    // A presença do aluno exige palavra-chave definida E data igual à de hoje.
+    // Faltando qualquer uma, a oficina recusa presença — por isso o aviso.
+    const pendencias = [];
     if(t.oficinas_sem_palavra_chave > 0){
-        avisoChaves.innerHTML = `
-            <strong>${t.oficinas_sem_palavra_chave} oficina(s) sem palavra-chave.</strong>
-            Enquanto estiverem assim, a presença é recusada. Defina na aba
+        pendencias.push(`<strong>${t.oficinas_sem_palavra_chave} oficina(s) sem palavra-chave</strong>`);
+    }
+    if(t.oficinas_sem_data > 0){
+        pendencias.push(`<strong>${t.oficinas_sem_data} oficina(s) sem data marcada</strong>`);
+    }
+
+    if(pendencias.length){
+        avisoChaves.innerHTML = `${pendencias.join(" e ")}.
+            Nesse estado a presença é recusada — o aluno só consegue registrar
+            no dia da oficina e com a palavra-chave certa. Ajuste na aba
             <em>Módulos e oficinas</em> antes da oficina começar.`;
         avisoChaves.classList.remove("hidden");
     } else {
@@ -236,9 +248,15 @@ function renderOficinas(){
                     <div class="rounded-xl border border-slate-100 p-3 dark:border-white/5">
                         <div class="flex flex-wrap items-center justify-between gap-2">
                             <p class="text-sm font-medium">${esc(o.nome)}</p>
-                            <span class="text-[11px] ${o.configurada ? "text-emerald-500" : "text-amber-500"}">
-                                ${o.configurada ? "palavra-chave definida" : "SEM PALAVRA-CHAVE"}
-                                · ${o.presencas} presença(s)
+                            <span class="flex flex-wrap items-center gap-2 text-[11px]">
+                                ${o.e_hoje ? `<span class="rounded-full bg-emerald-500/15 px-2 py-0.5 font-bold text-emerald-500">É HOJE</span>` : ""}
+                                <span class="${o.configurada ? "text-emerald-500" : "text-amber-500"}">
+                                    ${o.configurada ? "palavra-chave definida" : "SEM PALAVRA-CHAVE"}
+                                </span>
+                                <span class="${o.data ? "text-slate-400" : "text-amber-500"}">
+                                    ${o.data ? esc(o.data.split("-").reverse().join("/")) : "SEM DATA"}
+                                </span>
+                                <span class="text-slate-400">· ${o.presencas} presença(s)</span>
                             </span>
                         </div>
                         <div class="mt-3 grid gap-2 sm:grid-cols-[2fr_1fr_auto]">

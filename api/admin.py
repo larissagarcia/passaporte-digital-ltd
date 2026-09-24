@@ -20,6 +20,7 @@ from werkzeug.security import generate_password_hash
 
 from auth import erro, exige_admin
 from db import get_db, transacao
+from tempo import hoje_iso
 
 admin = Blueprint("admin", __name__, url_prefix="/api/v1/admin")
 
@@ -66,6 +67,9 @@ def resumo():
     sem_chave = db.execute(
         "SELECT COUNT(*) c FROM oficinas WHERE palavra_chave = 'DEFINIR'"
     ).fetchone()["c"]
+    sem_data = db.execute(
+        "SELECT COUNT(*) c FROM oficinas WHERE data IS NULL"
+    ).fetchone()["c"]
 
     return jsonify({
         "totais": {
@@ -74,7 +78,9 @@ def resumo():
             "modulos": total_modulos,
             "oficinas": total_oficinas,
             "oficinas_sem_palavra_chave": sem_chave,
+            "oficinas_sem_data": sem_data,
         },
+        "hoje": hoje_iso(),
         "alunos": [{
             "id": a["id"],
             "nome": a["nome"],
@@ -113,10 +119,11 @@ def listar_modulos():
             "data": o["data"],
             "palavra_chave": o["palavra_chave"],
             "configurada": o["palavra_chave"].upper() != "DEFINIR",
+            "e_hoje": o["data"] == hoje_iso(),
             "presencas": o["presencas"],
         })
 
-    return jsonify({"modulos": [{
+    return jsonify({"hoje": hoje_iso(), "modulos": [{
         "id": m["id"],
         "numero": m["numero"],
         "nome": m["nome"],

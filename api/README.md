@@ -83,8 +83,25 @@ Os administradores seguintes podem ser criados pela aba **Usuários**.
 ```
 
 Respostas: `201` criada · `400` avaliação fora de 1–5 · `403` palavra-chave
-incorreta · `404` oficina inexistente · `409` presença repetida, ou oficina
-ainda sem palavra-chave configurada.
+incorreta · `404` oficina inexistente · `409` presença repetida, oficina ainda
+sem palavra-chave, sem data marcada, ou **fora do dia da oficina**.
+
+#### A presença só vale no dia da oficina
+
+O aluno só registra presença quando `oficinas.data` é igual à data de hoje.
+Oficina sem data marcada recusa presença, pelo mesmo critério do `DEFINIR`:
+falhar fechado em vez de aceitar qualquer dia.
+
+A data é conferida **antes** da palavra-chave — no dia errado, saber que a
+chave estava certa não ajuda o aluno em nada.
+
+**A comparação usa a data local, não `date('now')` do SQLite**, que é UTC. Em
+Brasília (UTC-3), a partir das 21h o UTC já virou o dia seguinte, e uma oficina
+noturna seria recusada com "hoje não é o dia desta oficina". O fuso fica em
+`api/tempo.py` e é configurável por `PASSAPORTE_FUSO`.
+
+**A exceção é a coordenação:** `POST /api/v1/admin/presencas` não checa data
+nenhuma. É o caminho para quem esqueceu de registrar no dia.
 
 ## Rodar localmente
 
@@ -109,6 +126,7 @@ template — o `index.html` é gerado no build, não a cada requisição.
 | `PASSAPORTE_DB` | `~/data/passaporte.db` | caminho do banco |
 | `PASSAPORTE_CORS_ORIGENS` | vazio (CORS desligado) | só se o frontend for hospedado fora |
 | `PASSAPORTE_API_BASE` | vazio (mesma origem) | lido por `src/generator.py`, idem |
+| `PASSAPORTE_FUSO` | `America/Sao_Paulo` | fuso que define "hoje" para a regra de data |
 
 No PythonAnywhere o padrão de `PASSAPORTE_DB` já resolve para
 `/home/<usuário>/data/passaporte.db`, que é onde a ADR manda o arquivo ficar —
@@ -168,9 +186,16 @@ ele pode copiar o arquivo no meio de uma transação.
 sqlite3 /home/<usuário>/data/passaporte.db ".backup /home/<usuário>/data/backup-$(date +%F).db"
 ```
 
-## Antes da primeira oficina
+## Antes de cada oficina
 
-As palavras-chave nascem como `DEFINIR` em `data/curso.json`, e uma oficina
-nesse estado **recusa presença** (`409`) em vez de aceitar qualquer coisa.
-Troque-as e rode `python api/seed.py` de novo — ele é idempotente e avisa
-quais ainda estão pendentes.
+No painel, em **Módulos e oficinas**, a oficina do dia precisa de duas coisas:
+
+1. **Palavra-chave** — nasce como `DEFINIR` e nesse estado recusa presença.
+2. **Data igual à de hoje** — sem data, ou com outra data, a presença é
+   recusada.
+
+Os cartões do topo do painel contam quantas oficinas estão em cada pendência, e
+a oficina de hoje aparece marcada com **É HOJE**.
+
+Se alguém não registrou no dia, a coordenação lança a presença pela aba
+**Turma** — esse caminho não tem restrição de data.
