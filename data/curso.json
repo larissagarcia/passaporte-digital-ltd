@@ -1,0 +1,148 @@
+{
+  "_comentario": "Catálogo de módulos e oficinas do LTD. Sucede a lista DEFAULT_BADGES de src/generator.py. As palavras-chave marcadas como DEFINIR precisam ser trocadas antes da oficina acontecer — o seed avisa quais ainda estão pendentes.",
+  "modulos": [
+    {
+      "numero": 1,
+      "nome": "INCLUSÃO DIGITAL",
+      "descricao": "",
+      "imagem_conquistada": "src/assets/badges/mdl_1_col.png",
+      "imagem_pendente": "src/assets/badges/mdl_1_cinza.png",
+      "oficinas": [
+        {
+          "slug": "Modulo1_InclusaoDigital",
+          "ordem": 1,
+          "nome": "INCLUSÃO DIGITAL - PARTE 1",
+          "descricao": "",
+          "data": null,
+          "palavra_chave": "DEFINIR"
+        },
+        {
+          "slug": "Modulo1_InclusaoDigital_Parte2",
+          "ordem": 2,
+          "nome": "INCLUSÃO DIGITAL - PARTE 2",
+          "descricao": "",
+          "data": null,
+          "palavra_chave": "DEFINIR"
+        }
+      ]
+    },
+    {
+      "numero": 2,
+      "nome": "PRODUTIVIDADE DIGITAL E EMPREGABILIDADE",
+      "descricao": "",
+      "imagem_conquistada": "src/assets/badges/mdl_2_col.png",
+      "imagem_pendente": "src/assets/badges/mdl_2_cinza.png",
+      "oficinas": [
+        {
+          "slug": "Modulo2_ProdutividadeDigital",
+          "ordem": 1,
+          "nome": "PRODUTIVIDADE DIGITAL E EMPREGABILIDADE - PARTE 1",
+          "descricao": "",
+          "data": null,
+          "palavra_chave": "DEFINIR"
+        },
+        {
+          "slug": "Modulo2_ProdutividadeDigital_Parte2",
+          "ordem": 2,
+          "nome": "PRODUTIVIDADE DIGITAL E EMPREGABILIDADE - PARTE 2",
+          "descricao": "",
+          "data": null,
+          "palavra_chave": "DEFINIR"
+        }
+      ]
+    },
+    {
+      "numero": 3,
+      "nome": "SEGURANÇA DIGITAL, CIDADANIA E PRIVACIDADE",
+      "descricao": "",
+      "imagem_conquistada": "src/assets/badges/mdl_3_col.png",
+      "imagem_pendente": "src/assets/badges/mdl_3_cinza.png",
+      "oficinas": [
+        {
+          "slug": "Modulo3_SegurancaDigital",
+          "ordem": 1,
+          "nome": "SEGURANÇA DIGITAL, CIDADANIA E PRIVACIDADE",
+          "descricao": "",
+          "data": null,
+          "palavra_chave": "DEFINIR"
+        }
+      ]
+    },
+    {
+      "numero": 4,
+      "nome": "INTELIGÊNCIA ARTIFICIAL NA PRÁTICA",
+      "descricao": "",
+      "imagem_conquistada": "src/assets/badges/mdl_4_col.png",
+      "imagem_pendente": "src/assets/badges/mdl_4_cinza.png",
+      "oficinas": [
+        {
+          "slug": "Modulo4_InteligenciaArtificial",
+          "ordem": 1,
+          "nome": "INTELIGÊNCIA ARTIFICIAL NA PRÁTICA",
+          "descricao": "",
+          "data": null,
+          "palavra_chave": "DEFINIR"
+        }
+      ]
+    },
+    {
+      "numero": 5,
+      "nome": "PENSAMENTO COMPUTACIONAL",
+      "descricao": "",
+      "imagem_conquistada": "src/assets/badges/mdl_5_col.png",
+      "imagem_pendente": "src/assets/badges/mdl_5_cinza.png",
+      "oficinas": [
+        {
+          "slug": "Modulo5_PensamentoComputacional",
+          "ordem": 1,
+          "nome": "PENSAMENTO COMPUTACIONAL - PARTE 1",
+          "descricao": "",
+          "data": null,
+          "palavra_chave": "DEFINIR"
+        },
+        {
+          "slug": "Modulo5_PensamentoComputacional_Parte2",
+          "ordem": 2,
+          "nome": "PENSAMENTO COMPUTACIONAL - PARTE 2",
+          "descricao": "",
+          "data": null,
+          "palavra_chave": "DEFINIR"
+        }
+      ]
+    },
+    {
+      "numero": 6,
+      "nome": "ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA",
+      "descricao": "",
+      "imagem_conquistada": "src/assets/badges/mdl_6_col.png",
+      "imagem_pendente": "src/assets/badges/mdl_6_cinza.png",
+      "oficinas": [
+        {
+          "slug": "Modulo6_AcessibilidadeDigital",
+          "ordem": 1,
+          "nome": "ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA",
+          "descricao": "",
+          "data": null,
+          "palavra_chave": "DEFINIR"
+        }
+      ]
+    },
+    {
+      "numero": 7,
+      "nome": "TECNOLOGIA, ESG E SUSTENTABILIDADE",
+      "descricao": "",
+      "imagem_conquistada": "src/assets/badges/mdl_7_col.png",
+      "imagem_pendente": "src/assets/badges/mdl_7_cinza.png",
+      "oficinas": [
+        {
+          "slug": "Modulo7_TecnologiaESG",
+          "ordem": 1,
+          "nome": "TECNOLOGIA, ESG E SUSTENTABILIDADE",
+          "descricao": "",
+          "data": null,
+          "palavra_chave": "DEFINIR"
+        }
+      ]
+    }
+  ]
+}

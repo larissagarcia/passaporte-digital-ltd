@@ -1,0 +1,5 @@
+# Dependências da API (PythonAnywhere, Python 3.13).
+# O build estático do GitHub Actions usa o requirements.txt da raiz.
+# sqlite3 é biblioteca padrão — não há driver de banco aqui.
+flask
+flask-cors
