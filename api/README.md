@@ -38,13 +38,26 @@ ainda sem palavra-chave configurada.
 ```bash
 python -m venv .venv && .venv/bin/pip install -r api/requirements.txt
 .venv/bin/python api/seed.py                 # cria ~/data/passaporte.db e popula
-.venv/bin/python api/app.py                  # http://localhost:5000
+.venv/bin/python api/app.py                  # sobe a API na porta 5000
 ```
 
-Para liberar um frontend local no CORS:
+Confira que subiu:
+
+```bash
+curl http://localhost:5000/api/v1/saude
+```
+
+> **São duas portas diferentes.** A API responde na **5000** e só atende rotas
+> sob `/api/v1` — abrir `http://localhost:5000/` dá `404`, porque ela não serve
+> página nenhuma. O frontend é estático e roda separado, normalmente na **8000**
+> via `python -m http.server 8000` na raiz do repositório.
+
+Com o frontend local em outra porta, ele é uma origem distinta da API e precisa
+ser liberado no CORS — senão o navegador bloqueia as chamadas:
 
 ```bash
 export PASSAPORTE_CORS_ORIGENS="http://localhost:8000,https://gaia28.github.io"
+.venv/bin/python api/app.py
 ```
 
 ## Variáveis de ambiente
