@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Banco SQLite local (em produção o arquivo mora fora do repositório)
+*.db
+*.db-journal

@@ -133,26 +133,52 @@ Em ordem de gravidade para este projeto:
 5. **Sem WebSocket e sem tarefa agendada frequente** no free. Um painel ao vivo
    para o instrutor não cabe nessa plataforma.
 
-### 3.4 SQLite no PythonAnywhere — a ressalva técnica
+### 3.4 Banco: SQLite — decidido
 
-O armazenamento do PythonAnywhere é em rede, e a própria documentação deles
+**Decisão: SQLite.** O MySQL não está disponível no plano gratuito no momento da
+criação da conta, o que elimina a alternativa que esta ADR recomendava
+originalmente.
+
+A ressalva que motivava aquela recomendação continua válida e precisa ser
+mitigada: o armazenamento do PythonAnywhere é em rede, e a documentação deles
 desaconselha SQLite para aplicações web por causa de travamento de arquivo
-(`database is locked`). O free tier já inclui **MySQL**, que não sofre disso.
+(`database is locked`).
 
-Avaliação honesta para este projeto: com 12 alunos e escritas concentradas em
-poucos minutos por oficina, o SQLite provavelmente funcionaria sem incidente. O
-risco é baixo no volume atual. Mas é um risco que custa zero evitar.
+O que reduz o risco no nosso caso concreto:
 
-- **SQLite:** backup trivial (baixar um arquivo), zero configuração, migração
-  simples para outra hospedagem. Risco de lock sob concorrência; `WAL` não
-  resolve em sistema de arquivos de rede.
-- **MySQL (free tier):** sem problema de lock, mas backup exige `mysqldump` e
-  há uma cota de conexões.
+- O free tier roda **um único worker**. Escrita concorrente entre processos, que
+  é a origem clássica do problema, praticamente não acontece. A concorrência
+  real se limita a threads do mesmo worker e a acessos feitos por console ou
+  tarefa agendada enquanto o app está no ar.
+- O volume é de 12 alunos, com escrita concentrada em poucos minutos por
+  oficina.
 
-**Recomendação:** começar em MySQL. Se a portabilidade do arquivo único for
-considerada mais valiosa que a garantia de escrita, SQLite é aceitável — desde
-que a decisão seja consciente e o erro `database is locked` seja tratado com
-retry no código.
+O que ganhamos de volta: `sqlite3` é biblioteca padrão — nenhum driver no
+`requirements.txt`, nenhuma credencial de banco para gerenciar — e o backup é um
+arquivo só, o que também simplifica a migração prevista na seção 5.
+
+**Regras de implementação obrigatórias** (o risco só é aceitável com elas):
+
+1. `timeout` alto no `connect` (o padrão de 5s falha rápido demais); com ele o
+   SQLite espera o lock liberar em vez de estourar `database is locked`.
+2. **Uma conexão por requisição**, fechada ao final. Nada de conexão global
+   compartilhada entre threads.
+3. `PRAGMA foreign_keys = ON` em toda conexão — o SQLite ignora chave
+   estrangeira por padrão.
+4. **Não** habilitar `journal_mode = WAL`. O WAL depende de memória
+   compartilhada via arquivo `-shm`, que é justamente o que não funciona de
+   forma confiável em sistema de arquivos de rede. O journal padrão é o
+   comportamento seguro aqui.
+5. O arquivo `.db` mora **fora do diretório do repositório** (ex.:
+   `/home/<usuário>/data/`), para não ser tocado por `git pull` nem arriscar ir
+   para o controle de versão.
+6. Backup por `conn.backup()` ou `sqlite3 .backup` — **nunca `cp`**, que pode
+   copiar o arquivo no meio de uma transação. O free tier permite uma tarefa
+   agendada diária, suficiente para isso.
+
+**Gatilho de revisão:** se `database is locked` aparecer em produção mesmo com o
+`timeout`, ou se o LTD passar a rodar turmas simultâneas, reavaliar — as saídas
+são o MySQL de um plano pago ou um Postgres gerenciado externo.
 
 ### 3.5 O custo de dividir em duas origens
 
@@ -219,7 +245,12 @@ no Pages não muda — só a URL base da API. É o motivo de manter essa URL em 
 - [ ] Confirmar na whitelist do PythonAnywhere os domínios de saída necessários
       (API do Telegram, e o que mais o backend for chamar).
 - [ ] Confirmar a cota corrente de CPU do free tier.
-- [ ] Decidir MySQL vs SQLite (recomendação: MySQL) e registrar aqui.
+- [x] Decidir MySQL vs SQLite — **SQLite** (MySQL indisponível no free tier).
+      Ver seção 3.4, incluindo as regras de implementação obrigatórias.
+- [x] Web app criado no PythonAnywhere com **Python 3.13** e Flask, respondendo.
+      Versão escolhida no maior número disponível porque o PythonAnywhere não
+      permite trocar a versão de um web app existente e o free tier dá direito a
+      apenas um.
 - [ ] Corrigir `.github/workflows/deploy.yml`, que **hoje está com YAML
       inválido** — o step de notificação do Telegram não está indentado dentro
       da lista de steps (a partir da linha 56), além de `$ {{ secrets... }}` com
