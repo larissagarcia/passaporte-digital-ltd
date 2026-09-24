@@ -13,8 +13,9 @@ PRAGMA foreign_keys = ON;
 -- ---------------------------------------------------------------------------
 -- usuarios
 -- ---------------------------------------------------------------------------
--- Aluno entra por código enviado ao e-mail (sem senha). Só administrador tem
--- senha, por isso `senha_hash` é NULL para aluno — garantido pelo CHECK final.
+-- Aluno não tem senha: na fase 1 o acesso é liberado apenas conferindo se o
+-- e-mail existe na base (ver `sessoes`). Só administrador tem senha, por isso
+-- `senha_hash` é NULL para aluno — garantido pelo CHECK final.
 CREATE TABLE usuarios (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     nome        TEXT    NOT NULL,
@@ -92,6 +93,31 @@ CREATE TABLE presencas (
 
 CREATE INDEX idx_presencas_usuario ON presencas(usuario_id);
 CREATE INDEX idx_presencas_oficina ON presencas(oficina_id);
+
+
+-- ---------------------------------------------------------------------------
+-- sessoes
+-- ---------------------------------------------------------------------------
+-- Token devolvido no login e enviado depois no cabeçalho `Authorization`.
+-- Cookie de sessão não serve porque o frontend (GitHub Pages) e a API
+-- (PythonAnywhere) são origens diferentes — ver ADR-001, seção 3.5.
+--
+-- Guardamos o SHA-256 do token, não o token: se o arquivo .db vazar, os tokens
+-- não podem ser reaproveitados. O valor original só existe no navegador.
+--
+-- FASE 1: o token é emitido apenas conferindo que o e-mail existe — não há
+-- segredo verificado do lado do aluno. Isso é uma fraqueza conhecida e
+-- aceita, condicionada a os e-mails saírem do HTML público (ver ADR-001).
+-- FASE 2: basta exigir um código de 6 dígitos antes deste INSERT. Nenhuma
+-- outra tabela e nenhuma rota autenticada mudam.
+CREATE TABLE sessoes (
+    token_hash TEXT    PRIMARY KEY,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    criada_em  TEXT    NOT NULL DEFAULT (datetime('now')),
+    expira_em  TEXT    NOT NULL
+);
+
+CREATE INDEX idx_sessoes_usuario ON sessoes(usuario_id);
 
 
 -- ---------------------------------------------------------------------------

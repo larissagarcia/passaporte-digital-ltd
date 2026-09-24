@@ -190,6 +190,30 @@ problemas que não existiriam num deploy único:
   **Decisão:** autenticação por token no cabeçalho `Authorization`, guardado em
   `localStorage`. O contraponto é exposição a XSS — o que torna obrigatório não
   injetar HTML de origem não confiável no DOM.
+
+#### Como o token é emitido — entrega em duas fases
+
+**Fase 1 (atual):** o aluno informa o e-mail e, se ele existir na base, recebe
+o token. **Não há segredo verificado do lado do aluno** — quem souber o e-mail
+de um colega entra como ele. É uma fraqueza conhecida e deliberadamente aceita,
+para não travar a primeira entrega num fluxo de envio de e-mail.
+
+A aceitação vale sob **uma condição inegociável**: os e-mails precisam sair do
+`index.html` publicado na mesma entrega. Hoje a lista está no HTML público
+(seção 1.1), então "saber o e-mail do colega" é copiar e colar da página. Sem
+remover a lista, a fase 1 não representa ganho nenhum de segurança sobre o
+estado atual — apenas move o mesmo problema para o servidor.
+
+O que a fase 1 resolve mesmo assim: a lista deixa de ser publicada, o progresso
+passa a ser persistido e o feedback das oficinas passa a ser coletado.
+
+**Fase 2:** exigir um código de 6 dígitos enviado ao e-mail antes de emitir o
+token. A mudança fica contida no endpoint de login — a tabela `sessoes`, o
+formato do token e todas as rotas autenticadas continuam iguais. É por isso que
+a sessão já nasce como tabela própria em vez de derivar do e-mail.
+
+**Pré-requisito da fase 2:** envio de e-mail depende da whitelist de saída do
+PythonAnywhere (seção 3.3, item 2). Verificar antes de planejar a fase.
 - **CORS** precisa ser configurado liberando exclusivamente a origem do Pages,
   nunca `*`. Requisições com `Authorization` disparam preflight `OPTIONS`.
 - **Dois deploys sem atomicidade.** Mudou o contrato da API e o frontend no
@@ -220,8 +244,9 @@ escassa cota de CPU servindo arquivo estático. **Rejeitada** por isso.
 **Positivas**
 
 - E-mails dos alunos saem do repositório e do HTML público.
-- O acesso passa a verificar um segredo de verdade (código enviado por e-mail),
-  e não a mera posse de um endereço que está publicado.
+- O e-mail deixa de ser um dado público e passa a ser algo que a pessoa precisa
+  saber de antemão. Na fase 1 isso ainda **não** é autenticação de verdade (ver
+  3.5) — é redução de exposição, não controle de acesso.
 - Presença e feedback passam a ser persistidos e ficam disponíveis para o LTD
   analisar a reação às oficinas.
 - O progresso segue o aluno entre aparelhos.
@@ -231,6 +256,8 @@ escassa cota de CPU servindo arquivo estático. **Rejeitada** por isso.
 - Passa a existir um serviço para operar, com renovação trimestral obrigatória.
 - Duas superfícies de deploy para manter em sintonia.
 - Token em `localStorage` amplia a consequência de uma falha de XSS.
+- **Na fase 1 o acesso continua sendo apenas o e-mail**, sem segredo
+  verificado. Dívida assumida com data para quitar na fase 2 (seção 3.5).
 - Surge uma classe nova de bug (CORS/preflight) que só aparece em produção.
 
 **Plano de saída:** se o PythonAnywhere se mostrar inviável, a API em Flask e o
@@ -256,6 +283,8 @@ no Pages não muda — só a URL base da API. É o motivo de manter essa URL em 
       da lista de steps (a partir da linha 56), além de `$ {{ secrets... }}` com
       espaço e `parse_mode=Markdonw`. O workflow não executa no estado atual, e
       este plano depende do Pages continuar publicando automaticamente.
-- [ ] Remover os e-mails de `data/alunos.json` e do build estático como parte da
-      mesma entrega que sobe a API — não antes (quebra o acesso atual), não
-      depois (mantém a exposição).
+- [ ] **Remover os e-mails de `data/alunos.json` e do build estático como parte
+      da mesma entrega que sobe a API** — não antes (quebra o acesso atual), não
+      depois (mantém a exposição). Com o login por e-mail apenas da fase 1, este
+      item deixa de ser higiene e passa a ser a condição que sustenta a decisão
+      da seção 3.5. Se ele não for feito, a fase 1 não entrega segurança alguma.
