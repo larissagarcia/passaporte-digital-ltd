@@ -1,78 +1,76 @@
+"""Gera o index.html estático publicado no GitHub Pages.
+
+O build produz apenas a casca da página: layout e a galeria de insígnias com
+todos os módulos bloqueados. Nenhum dado de aluno entra aqui — nome, e-mail e
+progresso vêm da API depois do login (ADR-001).
+
+Antes, este script embutia a turma inteira em `window.passaporteData`, o que
+publicava os e-mails dos alunos no HTML. Ver ADR-001, seção 1.1.
+"""
+
 import json
+import os
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
-
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DATA_FILE = PROJECT_ROOT / "data" / "alunos.json"
+CURSO_FILE = PROJECT_ROOT / "data" / "curso.json"
 TEMPLATE_DIR = PROJECT_ROOT / "src" / "templates"
 OUTPUT_FILE = PROJECT_ROOT / "index.html"
 
-DEFAULT_BADGES = [
-    {"nome": "MÓDULO 1 - PARTE 1: INCLUSÃO DIGITAL", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png"},
-    {"nome": "MÓDULO 1 - PARTE 2: INCLUSÃO DIGITAL", "modulos": ["Modulo1_InclusaoDigital", "Modulo1_InclusaoDigital_Parte2"], "imagem_conquistada": "src/assets/badges/mdl_1_col.png", "imagem_pendente": "src/assets/badges/mdl_1_cinza.png"},
-    {"nome": "MÓDULO 2 - PARTE 1: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png"},
-    {"nome": "MÓDULO 2 - PARTE 2: PRODUTIVIDADE DIGITAL E EMPREGABILIDADE", "modulos": ["Modulo2_ProdutividadeDigital", "Modulo2_ProdutividadeDigital_Parte2"], "imagem_conquistada": "src/assets/badges/mdl_2_col.png", "imagem_pendente": "src/assets/badges/mdl_2_cinza.png"},
-    {"nome": "MÓDULO 3: SEGURANÇA DIGITAL, CIDADANIA E PRIVACIDADE", "modulos": ["Modulo3_SegurancaDigital"], "imagem_conquistada": "src/assets/badges/mdl_3_col.png", "imagem_pendente": "src/assets/badges/mdl_3_cinza.png"},
-    {"nome": "MÓDULO 4: INTELIGÊNCIA ARTIFICIAL NA PRÁTICA", "modulos": ["Modulo4_InteligenciaArtificial"], "imagem_conquistada": "src/assets/badges/mdl_4_col.png", "imagem_pendente": "src/assets/badges/mdl_4_cinza.png"},
-    {"nome": "MÓDULO 5 - PARTE 1: PENSAMENTO COMPUTACIONAL", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png"},
-    {"nome": "MÓDULO 5 - PARTE 2: PENSAMENTO COMPUTACIONAL", "modulos": ["Modulo5_PensamentoComputacional", "Modulo5_PensamentoComputacional_Parte2"], "imagem_conquistada": "src/assets/badges/mdl_5_col.png", "imagem_pendente": "src/assets/badges/mdl_5_cinza.png"},
-    {"nome": "MÓDULO 6: ACESSIBILIDADE DIGITAL E TECNOLOGIA INCLUSIVA", "modulos": ["Modulo6_AcessibilidadeDigital"], "imagem_conquistada": "src/assets/badges/mdl_6_col.png", "imagem_pendente": "src/assets/badges/mdl_6_cinza.png"},
-    {"nome": "MÓDULO 7: TECNOLOGIA, ESG E SUSTENTABILIDADE", "modulos": ["Modulo7_TecnologiaESG"], "imagem_conquistada": "src/assets/badges/mdl_7_col.png", "imagem_pendente": "src/assets/badges/mdl_7_cinza.png"},
-]
+# Base da API em produção. O Actions pode sobrescrever com PASSAPORTE_API_BASE
+# sem editar código. Em localhost o script.js ignora isto e usa a porta 5000.
+API_BASE_PADRAO = "https://larissagarcia.pythonanywhere.com"
 
 
-def prepare_student(student, badges):
-    completed = set(student.get("modulos_concluidos", []))
-    completed.update(item for item in student.get("insignias", []) if item.startswith("Modulo"))
-    earned = set(student.get("insignias", []))
-    statuses = []
-    for index, badge in enumerate(badges):
-        requirements = set(badge.get("modulos", []))
-        conquered = requirements.issubset(completed) if requirements else badge["nome"] in earned
-        statuses.append({
-            **badge,
-            "numero": badge.get("numero", index + 1),
-            "descricao": badge.get("descricao", ""),
-            "imagem_conquistada": badge.get("imagem_conquistada", ""),
-            "imagem_pendente": badge.get("imagem_pendente", ""),
-            "conquistada": conquered,
-        })
-    conquered_count = sum(status["conquistada"] for status in statuses)
-    student["insignias_status"] = statuses
-    student["progresso_insignias"] = {
-        "conquistadas": conquered_count,
-        "total": len(statuses),
-        "percentual": round(conquered_count / len(statuses) * 100) if statuses else 0,
-    }
-    student["modulos"] = [
+def carregar_modulos():
+    """Módulos e oficinas para a galeria estática.
+
+    Só o que é público: número, nome, imagens e os nomes das oficinas. A
+    palavra-chave de cada oficina fica de fora — ela é o segredo que valida a
+    presença e nunca pode ir para o HTML.
+    """
+    curso = json.loads(CURSO_FILE.read_text(encoding="utf-8"))
+    return [
         {
-            "id": index + 1,
-            "nome": status["nome"],
-            "imagem": status["imagem_conquistada"] if status["conquistada"] else status["imagem_pendente"],
-            "status": "conquistada" if status["conquistada"] else "bloqueado",
+            "numero": modulo["numero"],
+            "nome": modulo["nome"],
+            "descricao": modulo.get("descricao", ""),
+            "imagem_conquistada": modulo["imagem_conquistada"],
+            "imagem_pendente": modulo["imagem_pendente"],
+            "oficinas": [
+                {
+                    "slug": oficina["slug"],
+                    "ordem": oficina["ordem"],
+                    "nome": oficina["nome"],
+                    "data": oficina.get("data"),
+                }
+                for oficina in modulo["oficinas"]
+            ],
         }
-        for index, status in enumerate(statuses)
+        for modulo in curso["modulos"]
     ]
-    return student
 
 
 def generate_site():
-    with DATA_FILE.open(encoding="utf-8") as data_file:
-        students = json.load(data_file)
-    if not students:
-        raise ValueError(f"Nenhum aluno encontrado em {DATA_FILE}")
+    modulos = carregar_modulos()
+    if not modulos:
+        raise ValueError(f"Nenhum módulo encontrado em {CURSO_FILE}")
 
-    students = [prepare_student(student, DEFAULT_BADGES) for student in students]
-    student = students[0]
+    api_base = os.environ.get("PASSAPORTE_API_BASE", API_BASE_PADRAO).rstrip("/")
+
     environment = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=True)
     template = environment.get_template("index.html")
     OUTPUT_FILE.write_text(
-        template.render(aluno=student, alunos=students, insignias=DEFAULT_BADGES),
+        template.render(modulos=modulos, api_base=api_base),
         encoding="utf-8",
     )
+
+    oficinas = sum(len(m["oficinas"]) for m in modulos)
     print(f"Página gerada em {OUTPUT_FILE}")
+    print(f"  {len(modulos)} módulos, {oficinas} oficinas, API em {api_base}")
+
 
 if __name__ == "__main__":
     generate_site()

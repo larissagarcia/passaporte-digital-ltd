@@ -23,8 +23,13 @@ from werkzeug.security import check_password_hash
 
 from db import get_db, init_app, transacao
 
-# Origem do frontend. Sem barra no fim: o navegador compara scheme + host.
-ORIGENS_PADRAO = "https://gaia28.github.io"
+# Origem do frontend no GitHub Pages. Sem caminho e sem barra no fim: o
+# navegador compara apenas scheme + host, então o `/passaporte-digital-ltd/`
+# da URL publicada não entra aqui. Derivada do dono do repositório
+# (github.com/larissagarcia/passaporte-digital-ltd); confirme em
+# Settings -> Pages se houver domínio próprio. Sobrescreva com
+# PASSAPORTE_CORS_ORIGENS sem precisar editar este arquivo.
+ORIGENS_PADRAO = "https://larissagarcia.github.io"
 
 VALIDADE_ALUNO = "+30 days"  # aluno volta a cada oficina; relogar toda vez irrita
 VALIDADE_ADMIN = "+12 hours"  # admin mexe em dado de todo mundo

@@ -69,10 +69,10 @@
 
                 <div class="min-w-0">
                     <p id="studentNameSidebar" class="truncate text-sm font-bold">
-                        {{ aluno.nome }}
+                        &nbsp;
                     </p>
                     <p id="studentEmailSidebar" class="truncate text-xs text-slate-400 dark:text-gray-400">
-                        {{ aluno.email }}
+                        &nbsp;
                     </p>
                     <p class="mt-1 text-[10px] font-bold text-green-500">
                         ONLINE
@@ -202,7 +202,7 @@
 
                         <div>
                             <h2 id="studentName" class="text-2xl font-bold leading-tight sm:text-3xl">
-                                Olá, {{ aluno.nome }}
+                                Olá
                             </h2>
                         </div>
                     </div>
@@ -211,10 +211,10 @@
 
                         <div class="flex items-center justify-between text-sm font-semibold">
                             <span id="progressText" class="flex items-center gap-2 text-[#ff2a00]">
-                                Progresso: {{ aluno.progresso_insignias.conquistadas }} de {{ aluno.progresso_insignias.total }} oficinas
+                                Progresso: 0 de {{ modulos|length }} Módulos
                             </span>
                             <strong id="progressPercent" class="text-[#ff2a00]">
-                                {{ aluno.progresso_insignias.percentual }}%
+                                0%
                             </strong>
                         </div>
 
@@ -222,7 +222,7 @@
                             <div
                                 id="progressBar"
                                 class="h-full rounded-full bg-orange-500 transition-all duration-500"
-                                style="width: {{ aluno.progresso_insignias.percentual }}%"
+                                style="width: 0%"
                             >
                             </div>
 
@@ -243,7 +243,7 @@
                         id="moduleCounter"
                         class="shrink-0 rounded-xl bg-slate-200/60 px-4 py-2 text-sm font-bold text-[#ff2a00] dark:bg-white/5 "
                     >
-                        {{ aluno.progresso_insignias.conquistadas }}/{{ aluno.progresso_insignias.total }}
+                        0/{{ modulos|length }}
                     </span>
                 </div>
 
@@ -304,8 +304,19 @@
                         </div>
                     </div>
 
+                    <div class="mt-6" id="oficinaField">
+                        <label for="oficinaSelect" class="text-sm font-medium">
+                            Qual oficina você está registrando?
+                        </label>
+                        <select
+                            id="oficinaSelect"
+                            class="mt-3 h-14 w-full rounded-2xl border border-slate-200 bg-transparent px-4 text-sm outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 dark:border-white/20"
+                        >
+                        </select>
+                    </div>
+
                     <div class="relative mt-6">
-                        <input 
+                        <input
                             id="keyword"
                             type="text" 
                             placeholder="Digite a Palavra-chave do Dia"
@@ -331,10 +342,12 @@
                         <div id="stars" class="mt-3 flex gap-2"></div>
                     </div>
 
-                    <button 
-                        id="rescueButton" 
-                        type="button" 
-                        disabled 
+                    <p id="presenceError" class="mt-4 hidden rounded-2xl bg-red-500/10 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400"></p>
+
+                    <button
+                        id="rescueButton"
+                        type="button"
+                        disabled
                         class="mt-6 flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-orange-600 to-red-400 px-4 text-sm font-bold text-white shadow-lg shadow-orange-500/20 transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                         >
                     <i 
@@ -453,7 +466,13 @@
     </div>
     
     <script>
-        window.passaporteData = {{ {"alunos": alunos}|tojson }};
+        // Nenhum dado de aluno é embutido aqui: tudo vem da API depois do
+        // login. Antes, esta linha publicava nome e e-mail de toda a turma
+        // no HTML estático (ADR-001, seção 1.1).
+        window.passaporteConfig = {
+            apiBase: {{ api_base|tojson }},
+            modulos: {{ modulos|tojson }}
+        };
     </script>
     <script src="src/js/script.js" defer>
     </script>
